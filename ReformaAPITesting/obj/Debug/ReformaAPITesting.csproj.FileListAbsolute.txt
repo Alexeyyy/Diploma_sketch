@@ -8,3 +8,13 @@ D:\Обучение\ReformaAPITesting\ReformaAPITesting\bin\Debug\Microsoft.Serv
 D:\Обучение\ReformaAPITesting\ReformaAPITesting\bin\Debug\Microsoft.WindowsAzure.Configuration.dll
 D:\Обучение\ReformaAPITesting\ReformaAPITesting\bin\Debug\Microsoft.ServiceBus.xml
 D:\Обучение\ReformaAPITesting\ReformaAPITesting\bin\Debug\Microsoft.WindowsAzure.Configuration.xml
+F:\Университет\4 курс\Диплом\Diploma_sketch\ReformaAPITesting\bin\Debug\ReformaAPITesting.exe.config
+F:\Университет\4 курс\Диплом\Diploma_sketch\ReformaAPITesting\obj\Debug\ReformaAPITesting.exe
+F:\Университет\4 курс\Диплом\Diploma_sketch\ReformaAPITesting\obj\Debug\ReformaAPITesting.pdb
+F:\Университет\4 курс\Диплом\Diploma_sketch\ReformaAPITesting\bin\Debug\ReformaAPITesting.exe
+F:\Университет\4 курс\Диплом\Diploma_sketch\ReformaAPITesting\bin\Debug\ReformaAPITesting.pdb
+F:\Университет\4 курс\Диплом\Diploma_sketch\ReformaAPITesting\bin\Debug\Microsoft.ServiceBus.dll
+F:\Университет\4 курс\Диплом\Diploma_sketch\ReformaAPITesting\bin\Debug\Microsoft.WindowsAzure.Configuration.dll
+F:\Университет\4 курс\Диплом\Diploma_sketch\ReformaAPITesting\bin\Debug\Microsoft.ServiceBus.xml
+F:\Университет\4 курс\Диплом\Diploma_sketch\ReformaAPITesting\bin\Debug\Microsoft.WindowsAzure.Configuration.xml
+F:\Университет\4 курс\Диплом\Diploma_sketch\ReformaAPITesting\obj\Debug\ReformaAPITesting.csprojResolveAssemblyReference.cache

@@ -52,6 +52,7 @@ namespace ReformaAPITesting
             request.Headers.Add(MessageHeader.CreateHeader("authenticate", string.Empty, this.tokenProvider.SecurityKey));
             return null;
         }
+        
         public void Validate(ServiceEndpoint endpoint)
         {
 
@@ -73,6 +74,10 @@ namespace ReformaAPITesting
          * 
          * http://stackoverflow.com/questions/14621544/how-can-i-add-authorization-header-to-the-request-in-wcf
          * http://stackoverflow.com/questions/3879199/intercept-soap-messages-from-and-to-a-web-service-at-the-client
+         * http://blogs.msdn.com/b/stcheng/archive/2009/02/21/wcf-how-to-inspect-and-modify-wcf-message-via-custom-messageinspector.aspx
+         * http://msdn.microsoft.com/en-us/library/ms733786(v=vs.110).aspx
+         * 
+         * http://stackoverflow.com/questions/10448327/edit-soap-of-a-wcf-service-using-iclientmessageinspector  ???
         */
         public static string LOGIN = "a.zhelepov";
         public static string PASSWORD = "!ALEX!()$!(($!";
@@ -104,7 +109,8 @@ namespace ReformaAPITesting
 
             CustomToken token = new CustomToken(response.LoginResult);
             AuthHeaderBehaviour behaviour = new AuthHeaderBehaviour(token);
-            //behaviour.BeforeSendRequest(client.);
+            client.Endpoint.Behaviors.Add(new AuthHeaderBehaviour(token));
+            //client.SetRequestForSubmit(new string[] { "7329012644" });
 
 
             Console.WriteLine("Login result: " + response.LoginResult);
