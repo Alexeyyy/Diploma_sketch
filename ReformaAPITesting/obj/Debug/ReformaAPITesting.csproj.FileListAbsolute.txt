@@ -1,0 +1,10 @@
+D:\Обучение\ReformaAPITesting\ReformaAPITesting\bin\Debug\ReformaAPITesting.exe.config
+D:\Обучение\ReformaAPITesting\ReformaAPITesting\bin\Debug\ReformaAPITesting.exe
+D:\Обучение\ReformaAPITesting\ReformaAPITesting\bin\Debug\ReformaAPITesting.pdb
+D:\Обучение\ReformaAPITesting\ReformaAPITesting\obj\Debug\ReformaAPITesting.csprojResolveAssemblyReference.cache
+D:\Обучение\ReformaAPITesting\ReformaAPITesting\obj\Debug\ReformaAPITesting.exe
+D:\Обучение\ReformaAPITesting\ReformaAPITesting\obj\Debug\ReformaAPITesting.pdb
+D:\Обучение\ReformaAPITesting\ReformaAPITesting\bin\Debug\Microsoft.ServiceBus.dll
+D:\Обучение\ReformaAPITesting\ReformaAPITesting\bin\Debug\Microsoft.WindowsAzure.Configuration.dll
+D:\Обучение\ReformaAPITesting\ReformaAPITesting\bin\Debug\Microsoft.ServiceBus.xml
+D:\Обучение\ReformaAPITesting\ReformaAPITesting\bin\Debug\Microsoft.WindowsAzure.Configuration.xml

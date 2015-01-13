@@ -1,0 +1,1704 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://api-beta.reformagkh.ru/api_document_literal" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap-enc="http://schemas.xmlsoap.org/soap/encoding/" xmlns="http://schemas.xmlsoap.org/wsdl/" name="ApiSoap" targetNamespace="http://api-beta.reformagkh.ru/api_document_literal" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://api-beta.reformagkh.ru/api_document_literal">
+      <xsd:element name="Login">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="login" type="xsd:string" />
+            <xsd:element name="password" type="xsd:string" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="LoginResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="LoginResult" type="xsd:string" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="Logout">
+        <xsd:complexType />
+      </xsd:element>
+      <xsd:element name="GetRequestList">
+        <xsd:complexType />
+      </xsd:element>
+      <xsd:simpleType name="RequestStatus">
+        <xsd:restriction base="xsd:int">
+          <xsd:enumeration label="approved" description="Заявка подверждена" value="1" />
+          <xsd:enumeration label="declined" description="Заявка отклонена" value="2" />
+          <xsd:enumeration label="pending" description="В ожидании рассмотрения" value="3" />
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:complexType name="RequestState">
+        <xsd:all>
+          <xsd:element name="id" type="xsd:int" />
+          <xsd:element name="inn" type="xsd:string" />
+          <xsd:element name="create_date" type="xsd:dateTime" />
+          <xsd:element name="update_date" nillable="true" type="xsd:dateTime" />
+          <xsd:element name="status" type="tns:RequestStatus" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="ArrayOfRequestState">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:RequestState" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="GetRequestListResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="GetRequestListResult" type="tns:ArrayOfRequestState" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:complexType name="ArrayOfString">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="SetRequestForSubmit">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="inns" type="tns:ArrayOfString" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:simpleType name="SetRequestForSubmitInnStatusEnum">
+        <xsd:restriction base="xsd:int">
+          <xsd:enumeration label="Success" description="Ошибок нет. Заявка подана." value="0" />
+          <xsd:enumeration label="Missing INN" value="1" />
+          <xsd:enumeration label="INN is not valid" description="Указан некорректный ИНН" value="2" />
+          <xsd:enumeration label="Request have been already submitted" description="Запрос на подписку был уже подан ранее" value="3" />
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:complexType name="SetRequestForSubmitInnStatus">
+        <xsd:all>
+          <xsd:element name="inn" type="xsd:string" />
+          <xsd:element name="status" type="tns:SetRequestForSubmitInnStatusEnum" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="ArrayOfSetRequestForSubmitInnStatus">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:SetRequestForSubmitInnStatus" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="SetRequestForSubmitResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="SetRequestForSubmitResult" type="tns:ArrayOfSetRequestForSubmitInnStatus" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:complexType name="FiasAddress">
+        <xsd:all>
+          <xsd:element name="city_id" nillable="true" type="xsd:string" />
+          <xsd:element name="street_id" nillable="true" type="xsd:string" />
+          <xsd:element name="house_number" type="xsd:string" />
+          <xsd:element name="building" nillable="true" type="xsd:string" />
+          <xsd:element name="block" nillable="true" type="xsd:string" />
+          <xsd:element name="room_number" nillable="true" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:element name="GetHouseInfo">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="address" type="tns:FiasAddress" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:simpleType name="HouseStateEnum">
+        <xsd:restriction base="xsd:int">
+          <xsd:enumeration label="normal" description="Исправный" value="1" />
+          <xsd:enumeration label="warning" description="Требующий капитального ремонта" value="2" />
+          <xsd:enumeration label="alarm" description="Аварийный" value="3" />
+          <xsd:enumeration label="noinfo" description="Нет данных" value="4" />
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="HouseStageEnum">
+        <xsd:restriction base="xsd:int">
+          <xsd:enumeration label="exploited" description="Эксплуатируемый" value="1" />
+          <xsd:enumeration label="decommissioned" description="Выведенный из эксплуатации" value="2" />
+          <xsd:enumeration label="drifting" description="Снесенный" value="3" />
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:complexType name="FullAddress">
+        <xsd:all>
+          <xsd:element name="region_guid" type="xsd:string" />
+          <xsd:element name="region_formal_name" type="xsd:string" />
+          <xsd:element name="region_short_name" type="xsd:string" />
+          <xsd:element name="region_code" type="xsd:string" />
+          <xsd:element name="area_guid" type="xsd:string" />
+          <xsd:element name="area_formal_name" type="xsd:string" />
+          <xsd:element name="area_short_name" type="xsd:string" />
+          <xsd:element name="area_code" type="xsd:string" />
+          <xsd:element name="city1_guid" type="xsd:string" />
+          <xsd:element name="city1_formal_name" type="xsd:string" />
+          <xsd:element name="city1_short_name" type="xsd:string" />
+          <xsd:element name="city1_code" type="xsd:string" />
+          <xsd:element name="city2_guid" nillable="true" type="xsd:string" />
+          <xsd:element name="city2_formal_name" nillable="true" type="xsd:string" />
+          <xsd:element name="city2_short_name" nillable="true" type="xsd:string" />
+          <xsd:element name="city2_code" nillable="true" type="xsd:string" />
+          <xsd:element name="city3_guid" nillable="true" type="xsd:string" />
+          <xsd:element name="city3_formal_name" nillable="true" type="xsd:string" />
+          <xsd:element name="city3_short_name" nillable="true" type="xsd:string" />
+          <xsd:element name="city3_code" nillable="true" type="xsd:string" />
+          <xsd:element name="street_guid" type="xsd:string" />
+          <xsd:element name="street_formal_name" type="xsd:string" />
+          <xsd:element name="street_short_name" type="xsd:string" />
+          <xsd:element name="street_code" type="xsd:string" />
+          <xsd:element name="additional_territory_guid" nillable="true" type="xsd:string" />
+          <xsd:element name="additional_territory_formal_name" nillable="true" type="xsd:string" />
+          <xsd:element name="additional_territory_short_name" nillable="true" type="xsd:string" />
+          <xsd:element name="additional_territory_code" nillable="true" type="xsd:string" />
+          <xsd:element name="house_number" type="xsd:string" />
+          <xsd:element name="building" nillable="true" type="xsd:string" />
+          <xsd:element name="block" nillable="true" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="HouseInfo">
+        <xsd:all>
+          <xsd:element name="house_id" type="xsd:int" />
+          <xsd:element name="state" type="tns:HouseStateEnum" />
+          <xsd:element name="stage" type="tns:HouseStageEnum" />
+          <xsd:element name="drifting_date" nillable="true" type="xsd:dateTime" />
+          <xsd:element name="full_address" type="tns:FullAddress" />
+          <xsd:element name="inn" nillable="true" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="ArrayOfHouseInfo">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:HouseInfo" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="GetHouseInfoResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="GetHouseInfoResult" type="tns:ArrayOfHouseInfo" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="GetHouseProfile">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="house_id" type="xsd:int" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:simpleType name="Decimal152">
+        <xsd:restriction base="xsd:decimal">
+          <xsd:totalDigits value="15" />
+          <xsd:fractionDigits value="2" />
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="HouseTypeEnum">
+        <xsd:restriction base="xsd:int">
+          <xsd:enumeration description="Общежитие" value="1" />
+          <xsd:enumeration description="Объект индивидуального жилищного строительства" value="2" />
+          <xsd:enumeration description="Жилой дом блокированной застройки" value="3" />
+          <xsd:enumeration description="Многоквартирный дом" value="4" />
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="HouseWallMaterialEnum">
+        <xsd:restriction base="xsd:int">
+          <xsd:enumeration description="Нет данных" value="1" />
+          <xsd:enumeration description="Каменные, кирпичные" value="2" />
+          <xsd:enumeration description="Панельные" value="3" />
+          <xsd:enumeration description="Блочные" value="4" />
+          <xsd:enumeration description="Смешанные" value="5" />
+          <xsd:enumeration description="Монолитные" value="6" />
+          <xsd:enumeration description="Деревянные" value="7" />
+          <xsd:enumeration description="Прочие" value="8" />
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="HouseFloorTypeEnum">
+        <xsd:restriction base="xsd:int">
+          <xsd:enumeration description="Нет данных" value="1" />
+          <xsd:enumeration description="Железобетонные" value="2" />
+          <xsd:enumeration description="Деревянные" value="3" />
+          <xsd:enumeration description="Смешанные" value="4" />
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="HouseEnergyEfficiencyClassEnum">
+        <xsd:restriction base="xsd:int">
+          <xsd:enumeration description="Нет данных" value="1" />
+          <xsd:enumeration description="Не присвоен" value="2" />
+          <xsd:enumeration description="A" value="3" />
+          <xsd:enumeration description="B" value="4" />
+          <xsd:enumeration description="B+" value="5" />
+          <xsd:enumeration description="B++" value="6" />
+          <xsd:enumeration description="C" value="7" />
+          <xsd:enumeration description="D" value="8" />
+          <xsd:enumeration description="E" value="9" />
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:complexType name="Facade">
+        <xsd:all>
+          <xsd:element name="area_total" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="area_plastered" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="area_unplastered" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="area_panel" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="area_tiled" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="area_lined_siding" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="area_wooden" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="area_insulated_decorative_plaster" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="area_insulated_tiles" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="area_insulated_siding" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="area_riprap" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="area_glazing_common_wooden" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="area_glazing_common_plastic" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="area_glazing_individual_wooden" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="area_glazing_individual_plastic" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="area_door_fillings_metal" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="area_door_fillings_others" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="last_overhaul_date" nillable="true" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="Roof">
+        <xsd:all>
+          <xsd:element name="area_total" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="area_pitched_slate" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="area_pitched_metal" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="area_pitched_others" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="area_flat" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="last_overhaul_date" nillable="true" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:simpleType name="BasementStageEnum">
+        <xsd:restriction base="xsd:int">
+          <xsd:enumeration description="нет данных" value="1" />
+          <xsd:enumeration description="отсутствует" value="2" />
+          <xsd:enumeration description="эксплуатируемый" value="3" />
+          <xsd:enumeration description="неэксплуатируемый" value="4" />
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:complexType name="Basement">
+        <xsd:all>
+          <xsd:element name="basement_stage" nillable="true" type="tns:BasementStageEnum" />
+          <xsd:element name="basement_area" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="basement_last_overhaul_date" nillable="true" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="CommonSpace">
+        <xsd:all>
+          <xsd:element name="common_space_area" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="common_space_overhaul_date" nillable="true" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="Chute">
+        <xsd:all>
+          <xsd:element name="chute_count" nillable="true" type="xsd:int" />
+          <xsd:element name="chute_last_overhaul_date" nillable="true" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:simpleType name="HeatingSystemNameEnum">
+        <xsd:restriction base="xsd:int">
+          <xsd:enumeration description="нет данных" value="1" />
+          <xsd:enumeration description="отсутствует" value="2" />
+          <xsd:enumeration description="центральное" value="3" />
+          <xsd:enumeration description="автономное" value="4" />
+          <xsd:enumeration description="поквартирное" value="5" />
+          <xsd:enumeration description="печное" value="6" />
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="ProvisioningEnum">
+        <xsd:restriction base="xsd:int">
+          <xsd:enumeration description="нет данных" value="1" />
+          <xsd:enumeration description="по нормативам или квартирным ПУ" value="2" />
+          <xsd:enumeration description="по показаниям общедомовых ПУ" value="3" />
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:complexType name="HeatingSystem">
+        <xsd:all>
+          <xsd:element name="system_name" nillable="true" type="tns:HeatingSystemNameEnum" />
+          <xsd:element name="elevators" nillable="true" type="xsd:int" />
+          <xsd:element name="system_length" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="last_overhaul_date" nillable="true" type="xsd:string" />
+          <xsd:element name="input_points_count" nillable="true" type="xsd:int" />
+          <xsd:element name="control_nodes_count" nillable="true" type="xsd:int" />
+          <xsd:element name="metering_devices_count" nillable="true" type="xsd:int" />
+          <xsd:element name="provisioning" nillable="true" type="tns:ProvisioningEnum" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:simpleType name="HotWaterSystemNameEnum">
+        <xsd:restriction base="xsd:int">
+          <xsd:enumeration description="нет данных" value="1" />
+          <xsd:enumeration description="отсутствует" value="2" />
+          <xsd:enumeration description="централизованная открытая" value="3" />
+          <xsd:enumeration description="централизованная закрытая" value="4" />
+          <xsd:enumeration description="поквартирная" value="5" />
+          <xsd:enumeration description="автономная" value="6" />
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:complexType name="HotWaterSystem">
+        <xsd:all>
+          <xsd:element name="system_name" nillable="true" type="tns:HotWaterSystemNameEnum" />
+          <xsd:element name="system_length" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="last_overhaul_date" nillable="true" type="xsd:string" />
+          <xsd:element name="input_points_count" nillable="true" type="xsd:int" />
+          <xsd:element name="control_nodes_count" nillable="true" type="xsd:int" />
+          <xsd:element name="metering_devices_count" nillable="true" type="xsd:int" />
+          <xsd:element name="provisioning" nillable="true" type="tns:ProvisioningEnum" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:simpleType name="ColdWaterSystemNameEnum">
+        <xsd:restriction base="xsd:int">
+          <xsd:enumeration description="нет данных" value="1" />
+          <xsd:enumeration description="отсутствует" value="2" />
+          <xsd:enumeration description="централизованная" value="3" />
+          <xsd:enumeration description="автономная" value="4" />
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:complexType name="ColdWaterSystem">
+        <xsd:all>
+          <xsd:element name="system_name" nillable="true" type="tns:ColdWaterSystemNameEnum" />
+          <xsd:element name="system_length" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="last_overhaul_date" nillable="true" type="xsd:string" />
+          <xsd:element name="input_points_count" nillable="true" type="xsd:int" />
+          <xsd:element name="metering_devices_count" nillable="true" type="xsd:int" />
+          <xsd:element name="provisioning" nillable="true" type="tns:ProvisioningEnum" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:simpleType name="SewerageSystemNameEnum">
+        <xsd:restriction base="xsd:int">
+          <xsd:enumeration description="нет данных" value="1" />
+          <xsd:enumeration description="отсутствует" value="2" />
+          <xsd:enumeration description="центральная" value="3" />
+          <xsd:enumeration description="автономная" value="4" />
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:complexType name="SewerageSystem">
+        <xsd:all>
+          <xsd:element name="system_name" nillable="true" type="tns:SewerageSystemNameEnum" />
+          <xsd:element name="system_length" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="last_overhaul_date" nillable="true" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:simpleType name="ElectricitySystemNameEnum">
+        <xsd:restriction base="xsd:int">
+          <xsd:enumeration description="нет данных" value="1" />
+          <xsd:enumeration description="отсутствует" value="2" />
+          <xsd:enumeration description="централизованное" value="3" />
+          <xsd:enumeration description="комбирированное" value="4" />
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:complexType name="ElectricitySystem">
+        <xsd:all>
+          <xsd:element name="system_name" nillable="true" type="tns:ElectricitySystemNameEnum" />
+          <xsd:element name="system_length" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="last_overhaul_date" nillable="true" type="xsd:string" />
+          <xsd:element name="input_points_count" nillable="true" type="xsd:int" />
+          <xsd:element name="metering_devices_count" nillable="true" type="xsd:int" />
+          <xsd:element name="provisioning" nillable="true" type="tns:ProvisioningEnum" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:simpleType name="GasSystemNameEnum">
+        <xsd:restriction base="xsd:int">
+          <xsd:enumeration description="нет данных" value="1" />
+          <xsd:enumeration description="отсутствует" value="2" />
+          <xsd:enumeration description="центральная" value="3" />
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:complexType name="GasSystem">
+        <xsd:all>
+          <xsd:element name="system_name" nillable="true" type="tns:GasSystemNameEnum" />
+          <xsd:element name="system_length" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="system_length_no_requirements" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="last_overhaul_date" nillable="true" type="xsd:string" />
+          <xsd:element name="input_points_count" nillable="true" type="xsd:int" />
+          <xsd:element name="metering_devices_count" nillable="true" type="xsd:int" />
+          <xsd:element name="provisioning" nillable="true" type="tns:ProvisioningEnum" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="Lift">
+        <xsd:all>
+          <xsd:element name="porch_number" nillable="true" type="xsd:string" />
+          <xsd:element name="factory_number" nillable="true" type="xsd:string" />
+          <xsd:element name="stops_count" nillable="true" type="xsd:int" />
+          <xsd:element name="capacity" nillable="true" type="xsd:int" />
+          <xsd:element name="date_exploitation" nillable="true" type="xsd:string" />
+          <xsd:element name="date_last_repair" nillable="true" type="xsd:string" />
+          <xsd:element name="plan_period" nillable="true" type="xsd:string" />
+          <xsd:element name="manufacturer" nillable="true" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="ArrayOfLift">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:Lift" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:simpleType name="ContractTypeEnum">
+        <xsd:restriction base="xsd:int">
+          <xsd:enumeration description="обслуживаемых ТСЖ" value="1" />
+          <xsd:enumeration description="обслуживаемых по договору между ТСЖ и управляющей организацией" value="2" />
+          <xsd:enumeration description="обслуживаемых по договору между собственниками и управляющей организацией" value="3" />
+          <xsd:enumeration description="обслуживаемых по результатам открытого конкурса органов местного самоуправления" value="4" />
+          <xsd:enumeration description="обслуживаемых по договору управления между застройщиком и управляющей организацией, отобранной по результатам открытого конкурса органом местного самоуправления" value="5" />
+          <xsd:enumeration description="обслуживаемых по договору управления специализированным жилищным фондом военных городков Минобороны РФ" value="6" />
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:complexType name="ManagementContract">
+        <xsd:all>
+          <xsd:element name="contract_type" nillable="true" type="tns:ContractTypeEnum" />
+          <xsd:element name="date_start" nillable="true" type="xsd:date" />
+          <xsd:element name="plan_date_stop" nillable="true" type="xsd:date" />
+          <xsd:element name="jobs" nillable="true" type="xsd:string" />
+          <xsd:element name="responsibility" nillable="true" type="xsd:string" />
+          <xsd:element name="notice" nillable="true" type="xsd:string" />
+          <xsd:element name="service_cost" nillable="true" type="xsd:string" />
+          <xsd:element name="resources_tsz_zsk" nillable="true" type="xsd:string" />
+          <xsd:element name="terms_service_tsz_zsk" nillable="true" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="Provider">
+        <xsd:all>
+          <xsd:element name="is_supported" nillable="true" type="xsd:boolean" />
+          <xsd:element name="supplied_via_management_organization" nillable="true" type="xsd:boolean" />
+          <xsd:element name="inn" nillable="true" type="xsd:string" />
+          <xsd:element name="alias" nillable="true" type="xsd:string" />
+          <xsd:element name="additional_info" nillable="true" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="Finance">
+        <xsd:all>
+          <xsd:element name="income_management" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="income_management_common_property" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="management_costs" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="debt_owners_total" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="charged_owners_total" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="payment_claims_compensation" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="payment_claims_refusal" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="payment_claims_not_delivered" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="repair_work" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="beautification_work" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="raised_funds_subsidies" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="raised_funds_credits" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="raised_funds_leasing" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="raised_funds_energy_service" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="raised_funds_contributions" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="raised_funds_others" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="income_supply_heating" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="income_supply_electricity" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="income_supply_gaz" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="income_supply_hot_water" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="income_supply_cold_water" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="income_supply_wastewater" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="debt_owners_heating" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="debt_owners_electricity" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="debt_owners_gaz" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="debt_owners_hot_water" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="debt_owners_cold_water" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="debt_owners_wastewater" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="charged_services_heating" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="charged_services_electricity" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="charged_services_gaz" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="charged_services_hot_water" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="charged_services_cold_water" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="charged_services_wastewater" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="paid_services_heating" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="paid_services_electricity" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="paid_services_gaz" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="paid_services_hot_water" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="paid_services_cold_water" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="paid_resources_heating" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="paid_resources_electricity" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="paid_resources_gaz" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="paid_resources_hot_water" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="paid_resources_cold_water" nillable="true" type="tns:Decimal152" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="HouseProfileData">
+        <xsd:all>
+          <xsd:element name="area_total" type="tns:Decimal152" />
+          <xsd:element name="area_residential" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="area_non_residential" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="cadastral_number" nillable="true" type="xsd:string" />
+          <xsd:element name="state" type="tns:HouseStateEnum" />
+          <xsd:element name="project_type" nillable="true" type="xsd:string" />
+          <xsd:element name="location_description" nillable="true" type="xsd:string" />
+          <xsd:element name="individual_name" nillable="true" type="xsd:string" />
+          <xsd:element name="house_type" nillable="true" type="tns:HouseTypeEnum" />
+          <xsd:element name="exploitation_start_year" nillable="true" type="xsd:string" />
+          <xsd:element name="wall_material" nillable="true" type="tns:HouseWallMaterialEnum" />
+          <xsd:element name="floor_type" nillable="true" type="tns:HouseFloorTypeEnum" />
+          <xsd:element name="storeys_count" nillable="true" type="xsd:int" />
+          <xsd:element name="entrance_count" nillable="true" type="xsd:int" />
+          <xsd:element name="elevators_count" nillable="true" type="xsd:int" />
+          <xsd:element name="area_private" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="area_municipal" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="area_national" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="area_land" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="area_territory" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="inventory_number" nillable="true" type="xsd:string" />
+          <xsd:element name="flats_count" nillable="true" type="xsd:int" />
+          <xsd:element name="residents_count" nillable="true" type="xsd:int" />
+          <xsd:element name="accounts_count" nillable="true" type="xsd:int" />
+          <xsd:element name="construction_features" nillable="true" type="xsd:string" />
+          <xsd:element name="thermal_actual_expense" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="thermal_normative_expense" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="energy_efficiency" nillable="true" type="tns:HouseEnergyEfficiencyClassEnum" />
+          <xsd:element name="energy_audit_date" nillable="true" type="xsd:date" />
+          <xsd:element name="privatization_start_date" nillable="true" type="xsd:date" />
+          <xsd:element name="deterioration_total" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="deterioration_foundation" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="deterioration_bearing_walls" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="deterioration_floor" nillable="true" type="tns:Decimal152" />
+          <xsd:element name="emergency_date" nillable="true" type="xsd:date" />
+          <xsd:element name="emergency_number" nillable="true" type="xsd:string" />
+          <xsd:element name="emergency_reason" nillable="true" type="xsd:string" />
+          <xsd:element name="emergency_after" nillable="true" type="xsd:string" />
+          <xsd:element name="facade" nillable="true" type="tns:Facade" />
+          <xsd:element name="roof" nillable="true" type="tns:Roof" />
+          <xsd:element name="basement" nillable="true" type="tns:Basement" />
+          <xsd:element name="common_space" nillable="true" type="tns:CommonSpace" />
+          <xsd:element name="chute" nillable="true" type="tns:Chute" />
+          <xsd:element name="heating_system" nillable="true" type="tns:HeatingSystem" />
+          <xsd:element name="hot_water_system" nillable="true" type="tns:HotWaterSystem" />
+          <xsd:element name="cold_water_system" nillable="true" type="tns:ColdWaterSystem" />
+          <xsd:element name="sewerage_system" nillable="true" type="tns:SewerageSystem" />
+          <xsd:element name="electricity_system" nillable="true" type="tns:ElectricitySystem" />
+          <xsd:element name="gas_system" nillable="true" type="tns:GasSystem" />
+          <xsd:element name="lifts" nillable="true" type="tns:ArrayOfLift" />
+          <xsd:element name="management_contract" nillable="true" type="tns:ManagementContract" />
+          <xsd:element name="heating_provider" nillable="true" type="tns:Provider" />
+          <xsd:element name="electricity_provider" nillable="true" type="tns:Provider" />
+          <xsd:element name="gas_provider" nillable="true" type="tns:Provider" />
+          <xsd:element name="hot_water_provider" nillable="true" type="tns:Provider" />
+          <xsd:element name="cold_water_provider" nillable="true" type="tns:Provider" />
+          <xsd:element name="drainage_provider" nillable="true" type="tns:Provider" />
+          <xsd:element name="finance" nillable="true" type="tns:Finance" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="GetHouseProfileResponse">
+        <xsd:all>
+          <xsd:element name="house_profile_data" type="tns:HouseProfileData" />
+          <xsd:element name="full_address" type="tns:FullAddress" />
+          <xsd:element name="stage" type="tns:HouseStageEnum" />
+          <xsd:element name="inn" nillable="true" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:element name="GetHouseProfileResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="GetHouseProfileResult" type="tns:GetHouseProfileResponse" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="SetHouseProfile">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="house_id" type="xsd:int" />
+            <xsd:element name="data" type="tns:HouseProfileData" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="GetHouseProfileSF">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="region_id" type="xsd:string" />
+            <xsd:element name="page_number" type="xsd:int" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:complexType name="ArrayOfGetHouseProfileResponse">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:GetHouseProfileResponse" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="GetHouseProfileSFResponse">
+        <xsd:all>
+          <xsd:element name="data" type="tns:ArrayOfGetHouseProfileResponse" />
+          <xsd:element name="page_number" type="xsd:int" />
+          <xsd:element name="page_count" type="xsd:int" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:element name="GetHouseProfileSFResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="GetHouseProfileSFResult" type="tns:GetHouseProfileSFResponse" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="GetHouseList">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="inn" type="xsd:string" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:complexType name="HouseData">
+        <xsd:all>
+          <xsd:element name="house_id" type="xsd:int" />
+          <xsd:element name="full_address" type="tns:FullAddress" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="ArrayOfHouseData">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:HouseData" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="GetHouseListResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="GetHouseListResult" type="tns:ArrayOfHouseData" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="SetHouseLinkToOrganization">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="house_id" type="xsd:int" />
+            <xsd:element name="inn" type="xsd:string" />
+            <xsd:element name="date_start" type="xsd:date" />
+            <xsd:element name="plan_date_stop" type="xsd:date" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="SetNewHouse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="address" type="tns:FiasAddress" />
+            <xsd:element name="state" type="tns:HouseStateEnum" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="SetNewHouseResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="SetNewHouseResult" type="xsd:int" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:simpleType name="ContractStopReasonEnum">
+        <xsd:restriction base="xsd:int">
+          <xsd:enumeration label="finished contract" description="Действие договора обслуживания прекращено" value="1" />
+          <xsd:enumeration label="added by error" description="Дом был включен в список по ошибке" value="2" />
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:element name="SetUnlinkFromOrganization">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="house_id" type="xsd:int" />
+            <xsd:element name="date_stop" type="xsd:date" />
+            <xsd:element name="stop_reason_type" type="tns:ContractStopReasonEnum" />
+            <xsd:element name="stop_reason" type="xsd:string" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:simpleType name="Okopf">
+        <xsd:restriction base="xsd:int">
+          <xsd:enumeration label="1_10_00" description="Хозяйственные товарищества" value="1" />
+          <xsd:enumeration label="1_10_51" description="Полные товарищества" value="2" />
+          <xsd:enumeration label="1_10_64" description="Товарищества на вере (коммандитные товарищества)" value="3" />
+          <xsd:enumeration label="1_20_00" description="Хозяйственные общества" value="4" />
+          <xsd:enumeration label="1_21_00" description="Общества с ограниченной или дополнительной ответственностью" value="5" />
+          <xsd:enumeration label="1_21_65" description="Общества с ограниченной ответственностью" value="6" />
+          <xsd:enumeration label="1_21_66" description="Общества с дополнительной ответственностью" value="7" />
+          <xsd:enumeration label="1_22_00" description="Акционерные общества" value="8" />
+          <xsd:enumeration label="1_22_47" description="Открытые акционерные общества" value="9" />
+          <xsd:enumeration label="1_22_67" description="Закрытые акционерные общества" value="10" />
+          <xsd:enumeration label="1_30_00" description="Хозяйственные партнерства" value="11" />
+          <xsd:enumeration label="1_40_00" description="Производственные кооперативы (артели)" value="12" />
+          <xsd:enumeration label="1_42_00" description="Производственные кооперативы (кроме сельскохозяйственных производственных кооперативов)" value="13" />
+          <xsd:enumeration label="1_50_00" description="Унитарные предприятия" value="14" />
+          <xsd:enumeration label="1_51_00" description="Унитарные предприятия, основанные на праве оперативного управления (казенные предприятия)" value="15" />
+          <xsd:enumeration label="1_51_41" description="Федеральные казенные предприятия" value="16" />
+          <xsd:enumeration label="1_51_43" description="Муниципальные казенные предприятия" value="17" />
+          <xsd:enumeration label="1_52_00" description="Унитарные предприятия, основанные на праве хозяйственного ведения" value="18" />
+          <xsd:enumeration label="1_52_41" description="Федеральные государственные унитарные предприятия" value="19" />
+          <xsd:enumeration label="1_52_42" description="Государственные унитарные предприятия субъектов Российской Федерации" value="20" />
+          <xsd:enumeration label="1_52_43" description="Муниципальные унитарные предприятия" value="21" />
+          <xsd:enumeration label="1_90_00" description="Прочие юридические лица, являющиеся коммерческими организациями" value="22" />
+          <xsd:enumeration label="2_01_00" description="Потребительские кооперативы" value="23" />
+          <xsd:enumeration label="2_01_02" description="Жилищные и жилищно-строительные кооперативы" value="24" />
+          <xsd:enumeration label="2_01_03" description="Жилищные накопительные кооперативы" value="25" />
+          <xsd:enumeration label="2_01_04" description="Кредитные потребительские кооперативы" value="26" />
+          <xsd:enumeration label="2_01_07" description="Потребительские общества" value="27" />
+          <xsd:enumeration label="2_02_00" description="Общественные организации (объединения)" value="28" />
+          <xsd:enumeration label="2_04_00" description="Фонды" value="29" />
+          <xsd:enumeration label="2_05_00" description="Некоммерческие партнерства" value="30" />
+          <xsd:enumeration label="2_06_00" description="Ассоциации (союзы)" value="31" />
+          <xsd:enumeration label="2_06_01" description="Ассоциации (союзы) экономического взаимодействия субъектов Российской Федерации" value="32" />
+          <xsd:enumeration label="2_06_03" description="Советы муниципальных образований субъектов Российской Федерации" value="33" />
+          <xsd:enumeration label="2_06_05" description="Союзы (ассоциации) кооперативов" value="34" />
+          <xsd:enumeration label="2_06_08" description="Союзы потребительских обществ" value="35" />
+          <xsd:enumeration label="2_09_00" description="Учреждения" value="36" />
+          <xsd:enumeration label="2_09_01" description="Автономные учреждения" value="37" />
+          <xsd:enumeration label="2_09_03" description="Бюджетные учреждения" value="38" />
+          <xsd:enumeration label="2_09_04" description="Казенные учреждения" value="39" />
+          <xsd:enumeration label="2_09_05" description="Общественные учреждения" value="40" />
+          <xsd:enumeration label="2_09_06" description="Частные учреждения" value="41" />
+          <xsd:enumeration label="2_80_00" description="Юридические лица, являющиеся некоммерческими организациями, не включенные в другие группировки" value="42" />
+          <xsd:enumeration label="2_80_01" description="Автономные некоммерческие организации" value="43" />
+          <xsd:enumeration label="2_80_04" description="Государственные компании" value="44" />
+          <xsd:enumeration label="2_80_05" description="Государственные корпорации" value="45" />
+          <xsd:enumeration label="2_80_16" description="Товарищества собственников жилья" value="46" />
+          <xsd:enumeration label="2_80_17" description="Территориальные общественные самоуправления" value="47" />
+          <xsd:enumeration label="2_90_00" description="Иные некоммерческие организации, не включенные в другие группировки" value="48" />
+          <xsd:enumeration label="3_00_01" description="Представительства юридических лиц" value="49" />
+          <xsd:enumeration label="3_00_02" description="Филиалы юридических лиц" value="50" />
+          <xsd:enumeration label="3_00_03" description="Обособленные подразделения юридических лиц" value="51" />
+          <xsd:enumeration label="3_00_04" description="Структурные подразделения обособленных подразделений юридических лиц" value="52" />
+          <xsd:enumeration label="3_00_06" description="Простые товарищества" value="53" />
+          <xsd:enumeration label="5_01_02" description="Индивидуальные предприниматели" value="54" />
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:complexType name="NewCompanyProfileData">
+        <xsd:all>
+          <xsd:element name="name_full" type="xsd:string" />
+          <xsd:element name="name_short" type="xsd:string" />
+          <xsd:element name="okopf" type="tns:Okopf" />
+          <xsd:element name="firstname" type="xsd:string" />
+          <xsd:element name="surname" type="xsd:string" />
+          <xsd:element name="middlename" type="xsd:string" />
+          <xsd:element name="position" type="xsd:string" />
+          <xsd:element name="ogrn" type="xsd:string" />
+          <xsd:element name="date_assignment_ogrn" type="xsd:date" />
+          <xsd:element name="name_authority_assigning_ogrn" type="xsd:string" />
+          <xsd:element name="legal_address" type="tns:FiasAddress" />
+          <xsd:element name="actual_address" type="tns:FiasAddress" />
+          <xsd:element name="post_address" type="tns:FiasAddress" />
+          <xsd:element name="phone" type="xsd:string" />
+          <xsd:element name="email" type="xsd:string" />
+          <xsd:element name="site" nillable="true" type="xsd:string" />
+          <xsd:element name="proportion_sf" nillable="true" type="xsd:float" />
+          <xsd:element name="proportion_mo" nillable="true" type="xsd:float" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:element name="SetNewCompany">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="inn" type="xsd:string" />
+            <xsd:element name="newCompanyData" type="tns:NewCompanyProfileData" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="GetCompanyProfile">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="inn" type="xsd:string" />
+            <xsd:element name="reporting_period_id" type="xsd:int" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:complexType name="CountDismissed">
+        <xsd:all>
+          <xsd:element name="count_dismissed" nillable="true" type="xsd:int" />
+          <xsd:element name="count_dismissed_admins" nillable="true" type="xsd:int" />
+          <xsd:element name="count_dismissed_engineers" nillable="true" type="xsd:int" />
+          <xsd:element name="count_dismissed_workers" nillable="true" type="xsd:int" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="CountHousesUnderMngReportDate">
+        <xsd:all>
+          <xsd:element name="count_houses_under_mng_report_date" nillable="true" type="xsd:int" />
+          <xsd:element name="serviced_by_tsg" nillable="true" type="xsd:int" />
+          <xsd:element name="serviced_by_tsg_uo" nillable="true" type="xsd:int" />
+          <xsd:element name="serviced_by_owner_uo" nillable="true" type="xsd:int" />
+          <xsd:element name="serviced_by_competition" nillable="true" type="xsd:int" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="CountHousesUnderMngStartPeriod">
+        <xsd:all>
+          <xsd:element name="count_houses_under_mng_start_period" nillable="true" type="xsd:int" />
+          <xsd:element name="serviced_by_tsg" nillable="true" type="xsd:int" />
+          <xsd:element name="serviced_by_tsg_uo" nillable="true" type="xsd:int" />
+          <xsd:element name="serviced_by_owner_uo" nillable="true" type="xsd:int" />
+          <xsd:element name="serviced_by_competition" nillable="true" type="xsd:int" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="SumSqHousesUnderMngReportDate">
+        <xsd:all>
+          <xsd:element name="sum_sq_houses_under_mng_report_date" nillable="true" type="xsd:float" />
+          <xsd:element name="by_houses_25" nillable="true" type="xsd:float" />
+          <xsd:element name="by_houses_26_50" nillable="true" type="xsd:float" />
+          <xsd:element name="by_houses_51_75" nillable="true" type="xsd:float" />
+          <xsd:element name="by_houses_76" nillable="true" type="xsd:float" />
+          <xsd:element name="by_houses_alarm" nillable="true" type="xsd:float" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="SumSqHousesUnderMngStartPeriod">
+        <xsd:all>
+          <xsd:element name="sum_sq_houses_under_mng_start_period" nillable="true" type="xsd:float" />
+          <xsd:element name="sum_sq_houses_concluded_contracts" nillable="true" type="xsd:float" />
+          <xsd:element name="sum_sq_houses_terminated_contracts" nillable="true" type="xsd:float" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="AvgTimeServiceMkd">
+        <xsd:all>
+          <xsd:element name="avg_time_service_mkd" nillable="true" type="xsd:float" />
+          <xsd:element name="by_houses_25" nillable="true" type="xsd:float" />
+          <xsd:element name="by_houses_26_50" nillable="true" type="xsd:float" />
+          <xsd:element name="by_houses_51_75" nillable="true" type="xsd:float" />
+          <xsd:element name="by_houses_76" nillable="true" type="xsd:float" />
+          <xsd:element name="by_houses_alarm" nillable="true" type="xsd:float" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="IncomeOfMng">
+        <xsd:all>
+          <xsd:element name="income_of_mng" nillable="true" type="xsd:float" />
+          <xsd:element name="by_houses_25" nillable="true" type="xsd:float" />
+          <xsd:element name="by_houses_26_50" nillable="true" type="xsd:float" />
+          <xsd:element name="by_houses_51_75" nillable="true" type="xsd:float" />
+          <xsd:element name="by_houses_76" nillable="true" type="xsd:float" />
+          <xsd:element name="by_houses_alarm" nillable="true" type="xsd:float" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="IncomeOfUsage">
+        <xsd:all>
+          <xsd:element name="income_of_usage" nillable="true" type="xsd:float" />
+          <xsd:element name="by_houses_25" nillable="true" type="xsd:float" />
+          <xsd:element name="by_houses_26_50" nillable="true" type="xsd:float" />
+          <xsd:element name="by_houses_51_75" nillable="true" type="xsd:float" />
+          <xsd:element name="by_houses_76" nillable="true" type="xsd:float" />
+          <xsd:element name="by_houses_alarm" nillable="true" type="xsd:float" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="IncomeOfKu">
+        <xsd:all>
+          <xsd:element name="income_of_ku" nillable="true" type="xsd:float" />
+          <xsd:element name="by_heating" nillable="true" type="xsd:float" />
+          <xsd:element name="by_electro" nillable="true" type="xsd:float" />
+          <xsd:element name="by_gaz" nillable="true" type="xsd:float" />
+          <xsd:element name="by_hot_water" nillable="true" type="xsd:float" />
+          <xsd:element name="by_cold_water" nillable="true" type="xsd:float" />
+          <xsd:element name="by_sewerage" nillable="true" type="xsd:float" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="SpendingOfMng">
+        <xsd:all>
+          <xsd:element name="spending_of_mng" nillable="true" type="xsd:float" />
+          <xsd:element name="by_houses_25" nillable="true" type="xsd:float" />
+          <xsd:element name="by_houses_26_50" nillable="true" type="xsd:float" />
+          <xsd:element name="by_houses_51_75" nillable="true" type="xsd:float" />
+          <xsd:element name="by_houses_76" nillable="true" type="xsd:float" />
+          <xsd:element name="by_houses_alarm" nillable="true" type="xsd:float" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="ClaimsByContractsMng">
+        <xsd:all>
+          <xsd:element name="claims_by_contracts_mng" nillable="true" type="xsd:float" />
+          <xsd:element name="claims_for_damage" nillable="true" type="xsd:float" />
+          <xsd:element name="claims_for_refusal" nillable="true" type="xsd:float" />
+          <xsd:element name="claims_for_short_shipment" nillable="true" type="xsd:float" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="ClaimsByRso">
+        <xsd:all>
+          <xsd:element name="claims_by_rso" nillable="true" type="xsd:float" />
+          <xsd:element name="by_heating" nillable="true" type="xsd:float" />
+          <xsd:element name="by_electro" nillable="true" type="xsd:float" />
+          <xsd:element name="by_gaz" nillable="true" type="xsd:float" />
+          <xsd:element name="by_hot_water" nillable="true" type="xsd:float" />
+          <xsd:element name="by_cold_water" nillable="true" type="xsd:float" />
+          <xsd:element name="by_sewerage" nillable="true" type="xsd:float" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="DebtForMng">
+        <xsd:all>
+          <xsd:element name="debt_for_mng" nillable="true" type="xsd:float" />
+          <xsd:element name="by_houses_25" nillable="true" type="xsd:float" />
+          <xsd:element name="by_houses_26_50" nillable="true" type="xsd:float" />
+          <xsd:element name="by_houses_51_75" nillable="true" type="xsd:float" />
+          <xsd:element name="by_houses_76" nillable="true" type="xsd:float" />
+          <xsd:element name="by_houses_alarm" nillable="true" type="xsd:float" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="DebtOwnersForKu">
+        <xsd:all>
+          <xsd:element name="debt_owners_for_ku" nillable="true" type="xsd:float" />
+          <xsd:element name="by_heating" nillable="true" type="xsd:float" />
+          <xsd:element name="by_electro" nillable="true" type="xsd:float" />
+          <xsd:element name="by_gaz" nillable="true" type="xsd:float" />
+          <xsd:element name="by_hot_water" nillable="true" type="xsd:float" />
+          <xsd:element name="by_cold_water" nillable="true" type="xsd:float" />
+          <xsd:element name="by_sewerage" nillable="true" type="xsd:float" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="DebtUoForKu">
+        <xsd:all>
+          <xsd:element name="debt_uo_for_ku" nillable="true" type="xsd:float" />
+          <xsd:element name="by_heating" nillable="true" type="xsd:float" />
+          <xsd:element name="by_electro" nillable="true" type="xsd:float" />
+          <xsd:element name="by_gaz" nillable="true" type="xsd:float" />
+          <xsd:element name="by_hot_water" nillable="true" type="xsd:float" />
+          <xsd:element name="by_cold_water" nillable="true" type="xsd:float" />
+          <xsd:element name="by_sewerage" nillable="true" type="xsd:float" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="ChargedForMng">
+        <xsd:all>
+          <xsd:element name="charged_for_mng" nillable="true" type="xsd:float" />
+          <xsd:element name="by_houses_25" nillable="true" type="xsd:float" />
+          <xsd:element name="by_houses_26_50" nillable="true" type="xsd:float" />
+          <xsd:element name="by_houses_51_75" nillable="true" type="xsd:float" />
+          <xsd:element name="by_houses_76" nillable="true" type="xsd:float" />
+          <xsd:element name="by_houses_alarm" nillable="true" type="xsd:float" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="ChargedForResources">
+        <xsd:all>
+          <xsd:element name="charged_for_resources" nillable="true" type="xsd:float" />
+          <xsd:element name="by_heating" nillable="true" type="xsd:float" />
+          <xsd:element name="by_electro" nillable="true" type="xsd:float" />
+          <xsd:element name="by_gaz" nillable="true" type="xsd:float" />
+          <xsd:element name="by_hot_water" nillable="true" type="xsd:float" />
+          <xsd:element name="by_cold_water" nillable="true" type="xsd:float" />
+          <xsd:element name="by_sewerage" nillable="true" type="xsd:float" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="SpendingRepair">
+        <xsd:all>
+          <xsd:element name="spending_repair" nillable="true" type="xsd:float" />
+          <xsd:element name="by_houses_25" nillable="true" type="xsd:float" />
+          <xsd:element name="by_houses_26_50" nillable="true" type="xsd:float" />
+          <xsd:element name="by_houses_51_75" nillable="true" type="xsd:float" />
+          <xsd:element name="by_houses_76" nillable="true" type="xsd:float" />
+          <xsd:element name="by_houses_alarm" nillable="true" type="xsd:float" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="SpendingBeauty">
+        <xsd:all>
+          <xsd:element name="spending_beauty" nillable="true" type="xsd:float" />
+          <xsd:element name="by_houses_25" nillable="true" type="xsd:float" />
+          <xsd:element name="by_houses_26_50" nillable="true" type="xsd:float" />
+          <xsd:element name="by_houses_51_75" nillable="true" type="xsd:float" />
+          <xsd:element name="by_houses_76" nillable="true" type="xsd:float" />
+          <xsd:element name="by_houses_alarm" nillable="true" type="xsd:float" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="SpendingRepairInvests">
+        <xsd:all>
+          <xsd:element name="spending_repair_invests" nillable="true" type="xsd:float" />
+          <xsd:element name="subsidy" nillable="true" type="xsd:float" />
+          <xsd:element name="credits" nillable="true" type="xsd:float" />
+          <xsd:element name="fin_lising" nillable="true" type="xsd:float" />
+          <xsd:element name="fin_service" nillable="true" type="xsd:float" />
+          <xsd:element name="contributions_residents" nillable="true" type="xsd:float" />
+          <xsd:element name="other_sources" nillable="true" type="xsd:float" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="PayedKuByStatements">
+        <xsd:all>
+          <xsd:element name="payed_ku_by_statements" nillable="true" type="xsd:float" />
+          <xsd:element name="by_heating" nillable="true" type="xsd:float" />
+          <xsd:element name="by_electro" nillable="true" type="xsd:float" />
+          <xsd:element name="by_gaz" nillable="true" type="xsd:float" />
+          <xsd:element name="by_hot_water" nillable="true" type="xsd:float" />
+          <xsd:element name="by_cold_water" nillable="true" type="xsd:float" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="PayedKuByNeeds">
+        <xsd:all>
+          <xsd:element name="payed_ku_by_needs" nillable="true" type="xsd:float" />
+          <xsd:element name="by_heating" nillable="true" type="xsd:float" />
+          <xsd:element name="by_electro" nillable="true" type="xsd:float" />
+          <xsd:element name="by_gaz" nillable="true" type="xsd:float" />
+          <xsd:element name="by_hot_water" nillable="true" type="xsd:float" />
+          <xsd:element name="by_cold_water" nillable="true" type="xsd:float" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="CompanyProfileData">
+        <xsd:all>
+          <xsd:element name="work_time" nillable="true" type="xsd:string" />
+          <xsd:element name="notes" nillable="true" type="xsd:string" />
+          <xsd:element name="participation_in_associations" nillable="true" type="xsd:string" />
+          <xsd:element name="srf_count" nillable="true" type="xsd:int" />
+          <xsd:element name="mo_count" nillable="true" type="xsd:int" />
+          <xsd:element name="offices_count" nillable="true" type="xsd:int" />
+          <xsd:element name="staff_regular_total" nillable="true" type="xsd:int" />
+          <xsd:element name="staff_regular_administrative" nillable="true" type="xsd:int" />
+          <xsd:element name="staff_regular_engineers" nillable="true" type="xsd:int" />
+          <xsd:element name="staff_regular_labor" nillable="true" type="xsd:int" />
+          <xsd:element name="count_dismissed" nillable="true" type="tns:CountDismissed" />
+          <xsd:element name="accidents_count" nillable="true" type="xsd:int" />
+          <xsd:element name="prosecute_count" nillable="true" type="xsd:int" />
+          <xsd:element name="prosecute_copies_of_documents" nillable="true" type="xsd:string" />
+          <xsd:element name="tsg_management_members" nillable="true" type="xsd:string" />
+          <xsd:element name="audit_commision_members" nillable="true" type="xsd:string" />
+          <xsd:element name="additional_info_freeform" nillable="true" type="xsd:string" />
+          <xsd:element name="residents_count" nillable="true" type="xsd:int" />
+          <xsd:element name="count_houses_under_mng_report_date" nillable="true" type="tns:CountHousesUnderMngReportDate" />
+          <xsd:element name="count_houses_under_mng_start_period" nillable="true" type="tns:CountHousesUnderMngStartPeriod" />
+          <xsd:element name="sum_sq_houses_under_mng_report_date" nillable="true" type="tns:SumSqHousesUnderMngReportDate" />
+          <xsd:element name="sum_sq_houses_under_mng_start_period" nillable="true" type="tns:SumSqHousesUnderMngStartPeriod" />
+          <xsd:element name="avg_time_service_mkd" nillable="true" type="tns:AvgTimeServiceMkd" />
+          <xsd:element name="income_of_mng" nillable="true" type="tns:IncomeOfMng" />
+          <xsd:element name="income_of_usage" nillable="true" type="tns:IncomeOfUsage" />
+          <xsd:element name="income_of_ku" nillable="true" type="tns:IncomeOfKu" />
+          <xsd:element name="spending_of_mng" nillable="true" type="tns:SpendingOfMng" />
+          <xsd:element name="claims_by_contracts_mng" nillable="true" type="tns:ClaimsByContractsMng" />
+          <xsd:element name="claims_by_rso" nillable="true" type="tns:ClaimsByRso" />
+          <xsd:element name="net_assets" nillable="true" type="xsd:float" />
+          <xsd:element name="annual_financial_statements" nillable="true" type="xsd:string" />
+          <xsd:element name="revenues_expenditures_estimates" nillable="true" type="xsd:string" />
+          <xsd:element name="performance_report" nillable="true" type="xsd:string" />
+          <xsd:element name="members_meetings_minutes" nillable="true" type="xsd:string" />
+          <xsd:element name="audit_commision_report" nillable="true" type="xsd:string" />
+          <xsd:element name="audit_report" nillable="true" type="xsd:string" />
+          <xsd:element name="debt_for_mng" nillable="true" type="tns:DebtForMng" />
+          <xsd:element name="debt_owners" nillable="true" type="xsd:float" />
+          <xsd:element name="debt_owners_for_ku" nillable="true" type="tns:DebtOwnersForKu" />
+          <xsd:element name="debt_uo_for_ku" nillable="true" type="tns:DebtUoForKu" />
+          <xsd:element name="debt_owners_communal" nillable="true" type="xsd:float" />
+          <xsd:element name="charged_for_mng" nillable="true" type="tns:ChargedForMng" />
+          <xsd:element name="charged_for_resources" nillable="true" type="tns:ChargedForResources" />
+          <xsd:element name="spending_repair" nillable="true" type="tns:SpendingRepair" />
+          <xsd:element name="spending_beauty" nillable="true" type="tns:SpendingBeauty" />
+          <xsd:element name="spending_repair_invests" nillable="true" type="tns:SpendingRepairInvests" />
+          <xsd:element name="payed_ku_by_statements" nillable="true" type="tns:PayedKuByStatements" />
+          <xsd:element name="payed_ku_by_needs" nillable="true" type="tns:PayedKuByNeeds" />
+          <xsd:element name="management_contract" nillable="true" type="xsd:string" />
+          <xsd:element name="services_cost" nillable="true" type="xsd:string" />
+          <xsd:element name="tariffs" nillable="true" type="xsd:string" />
+          <xsd:element name="name_full" type="xsd:string" />
+          <xsd:element name="name_short" type="xsd:string" />
+          <xsd:element name="okopf" type="tns:Okopf" />
+          <xsd:element name="firstname" type="xsd:string" />
+          <xsd:element name="surname" type="xsd:string" />
+          <xsd:element name="middlename" type="xsd:string" />
+          <xsd:element name="position" type="xsd:string" />
+          <xsd:element name="ogrn" type="xsd:string" />
+          <xsd:element name="date_assignment_ogrn" type="xsd:date" />
+          <xsd:element name="name_authority_assigning_ogrn" type="xsd:string" />
+          <xsd:element name="legal_address" type="tns:FiasAddress" />
+          <xsd:element name="actual_address" type="tns:FiasAddress" />
+          <xsd:element name="post_address" type="tns:FiasAddress" />
+          <xsd:element name="phone" type="xsd:string" />
+          <xsd:element name="email" type="xsd:string" />
+          <xsd:element name="site" nillable="true" type="xsd:string" />
+          <xsd:element name="proportion_sf" nillable="true" type="xsd:float" />
+          <xsd:element name="proportion_mo" nillable="true" type="xsd:float" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:element name="GetCompanyProfileResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="GetCompanyProfileResult" type="tns:CompanyProfileData" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="GetCompanyProfileSF">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="region_id" type="xsd:string" />
+            <xsd:element name="page_number" type="xsd:int" />
+            <xsd:element name="reporting_period_id" type="xsd:int" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:complexType name="ArrayOfCompanyProfileData">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:CompanyProfileData" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="GetCompanyProfileSFResponse">
+        <xsd:all>
+          <xsd:element name="data" type="tns:ArrayOfCompanyProfileData" />
+          <xsd:element name="page_number" type="xsd:int" />
+          <xsd:element name="page_count" type="xsd:int" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:element name="GetCompanyProfileSFResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="GetCompanyProfileSFResult" type="tns:GetCompanyProfileSFResponse" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="SetCompanyProfile">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="inn" type="xsd:string" />
+            <xsd:element name="reporting_period_id" type="xsd:int" />
+            <xsd:element name="data" type="tns:CompanyProfileData" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="GetReportingPeriodList">
+        <xsd:complexType />
+      </xsd:element>
+      <xsd:simpleType name="ReportingPeriodStateEnum">
+        <xsd:restriction base="xsd:int">
+          <xsd:enumeration label="current" description="Текущий" value="1" />
+          <xsd:enumeration label="archive" description="Архивный" value="2" />
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:complexType name="ReportingPeriod">
+        <xsd:all>
+          <xsd:element name="id" type="xsd:int" />
+          <xsd:element name="dateStart" type="xsd:date" />
+          <xsd:element name="dateEnd" type="xsd:date" />
+          <xsd:element name="name" type="xsd:string" />
+          <xsd:element name="state" type="tns:ReportingPeriodStateEnum" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="ArrayOfReportingPeriod">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:ReportingPeriod" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="GetReportingPeriodListResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="GetReportingPeriodListResult" type="tns:ArrayOfReportingPeriod" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="GetFileByID">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="file_id" type="xsd:int" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:complexType name="FileObject">
+        <xsd:all>
+          <xsd:element name="name" nillable="true" type="xsd:string" />
+          <xsd:element name="data" nillable="true" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:element name="GetFileByIDResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="GetFileByIDResult" type="tns:FileObject" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="SetFileDeleted">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="file_id" type="xsd:int" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:simpleType name="ProfilePartsEnum">
+        <xsd:restriction base="xsd:int">
+          <xsd:enumeration label="overview-prosecute_documents_copies" description="Анкета УО - Общая характеристика --- Копии документов о применении мер административного воздействия, а также мер, принятых для устранения нарушений, повлекших применение административных санкций" value="1" />
+          <xsd:enumeration label="overview-additional_files" description="Анкета УО - Общая характеристика --- Дополнительная информация" value="2" />
+          <xsd:enumeration label="financial_indicators-annual_financial_statements" description="Анкета УО – Финансовые показатели --- Годовая бухгалтерская отчетность" value="3" />
+          <xsd:enumeration label="financial_indicators-revenues_expenditures_estimates" description="Анкета УО – Финансовые показатели --- Сметы доходов и расходов ТСЖ или ЖСК" value="4" />
+          <xsd:enumeration label="financial_indicators-performance_report" description="Анкета УО – Финансовые показатели --- Отчет о выполнении сметы доходов и расходов" value="5" />
+          <xsd:enumeration label="financial_indicators-general_meetings_protocol" description="Анкета УО – Финансовые показатели --- Протоколы общих собраний членов товарищества или кооператива, заседаний правления и ревизионной комиссии" value="6" />
+          <xsd:enumeration label="financial_indicators-audit_commision_report" description="Анкета УО – Финансовые показатели --- Заключения ревизионной комиссии (ревизора) товарищества или кооператива по результатам проверки годовой бухгалтерской (финансовой) отчетности" value="7" />
+          <xsd:enumeration label="financial_indicators-audit_reports" description="Анкета УО – Финансовые показатели --- Аудиторские заключения" value="8" />
+          <xsd:enumeration label="management_activities-management_contract" description="Анкета УО – Деятельность по управлению МКД --- Проект договора управления" value="9" />
+          <xsd:enumeration label="management_activities-services_cost" description="Анкета УО – Деятельность по управлению МКД --- Стоимость услуг" value="10" />
+          <xsd:enumeration label="management_activities-tariffs" description="Анкета УО – Деятельность по управлению МКД --- Тарифы" value="11" />
+          <xsd:enumeration label="contract_periodic_data-jobs" description="Анкета МКД - Управление ---Выполняемые работы" value="12" />
+          <xsd:enumeration label="contract_periodic_data-responsibility" description="Анкета МКД - Управление --- Выполнение обязательств" value="13" />
+          <xsd:enumeration label="contract_periodic_data-cost_service" description="Анкета МКД - Управление --- Стоимость услуг" value="14" />
+          <xsd:enumeration label="contract_periodic_data-resources_tsz_zsk" description="Анкета МКД - Управление --- Средства ТСЖ или ЖСК" value="15" />
+          <xsd:enumeration label="contract_periodic_data-terms_service_tsz_zsk" description="Анкета МКД - Управление --- Условия оказания услуг ТСЖ или ЖСК" value="16" />
+          <xsd:enumeration label="mkd_overview-alarm_reason" description="Анкета МКД – Общая характеристика --- Файлы(акты), которые прикрепляются при смене состояния дома(на состояние «аварийный» и из состояния «аварийный»)" value="21" />
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:element name="GetFilesInfoFromHouseProfile">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="house_id" type="xsd:int" />
+            <xsd:element name="profile_part_id" type="tns:ProfilePartsEnum" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:complexType name="FileInfo">
+        <xsd:all>
+          <xsd:element name="file_id" type="xsd:int" />
+          <xsd:element name="name" type="xsd:string" />
+          <xsd:element name="extension" type="xsd:string" />
+          <xsd:element name="size" nillable="true" type="xsd:int" />
+          <xsd:element name="create_date" type="xsd:dateTime" />
+        </xsd:all>
+      </xsd:complexType>
+      <xsd:complexType name="ArrayOfFileInfo">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="item" type="tns:FileInfo" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="GetFilesInfoFromHouseProfileResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="GetFilesInfoFromHouseProfileResult" type="tns:ArrayOfFileInfo" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="GetFilesInfoFromCompanyProfile">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="inn" type="xsd:string" />
+            <xsd:element name="reporting_period_id" type="xsd:int" />
+            <xsd:element name="profile_part_id" type="tns:ProfilePartsEnum" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="GetFilesInfoFromCompanyProfileResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="GetFilesInfoFromCompanyProfileResult" type="tns:ArrayOfFileInfo" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="SetFileToHouseProfile">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="house_id" type="xsd:int" />
+            <xsd:element name="profile_part_id" type="tns:ProfilePartsEnum" />
+            <xsd:element name="file_object" type="tns:FileObject" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="SetFileToHouseProfileResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="SetFileToHouseProfileResult" type="tns:FileInfo" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="SetFileToCompanyProfile">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="reporting_period_id" type="xsd:int" />
+            <xsd:element name="inn" type="xsd:string" />
+            <xsd:element name="profile_part_id" type="tns:ProfilePartsEnum" />
+            <xsd:element name="file_object" type="tns:FileObject" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="SetFileToCompanyProfileResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="SetFileToCompanyProfileResult" type="tns:FileInfo" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:complexType name="ErrorDetails">
+        <xsd:all>
+          <xsd:element name="code" type="xsd:int" />
+          <xsd:element name="name" nillable="true" type="xsd:string" />
+          <xsd:element name="description" nillable="true" type="xsd:string" />
+        </xsd:all>
+      </xsd:complexType>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="LoginIn">
+    <wsdl:part name="parameters" element="tns:Login" />
+  </wsdl:message>
+  <wsdl:message name="LoginOut">
+    <wsdl:part name="parameters" element="tns:LoginResponse" />
+  </wsdl:message>
+  <wsdl:message name="LogoutIn">
+    <wsdl:part name="parameters" element="tns:Logout" />
+  </wsdl:message>
+  <wsdl:message name="GetRequestListIn">
+    <wsdl:part name="parameters" element="tns:GetRequestList" />
+  </wsdl:message>
+  <wsdl:message name="GetRequestListOut">
+    <wsdl:part name="parameters" element="tns:GetRequestListResponse" />
+  </wsdl:message>
+  <wsdl:message name="SetRequestForSubmitIn">
+    <wsdl:part name="parameters" element="tns:SetRequestForSubmit" />
+  </wsdl:message>
+  <wsdl:message name="SetRequestForSubmitOut">
+    <wsdl:part name="parameters" element="tns:SetRequestForSubmitResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetHouseInfoIn">
+    <wsdl:part name="parameters" element="tns:GetHouseInfo" />
+  </wsdl:message>
+  <wsdl:message name="GetHouseInfoOut">
+    <wsdl:part name="parameters" element="tns:GetHouseInfoResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetHouseProfileIn">
+    <wsdl:part name="parameters" element="tns:GetHouseProfile" />
+  </wsdl:message>
+  <wsdl:message name="GetHouseProfileOut">
+    <wsdl:part name="parameters" element="tns:GetHouseProfileResponse" />
+  </wsdl:message>
+  <wsdl:message name="SetHouseProfileIn">
+    <wsdl:part name="parameters" element="tns:SetHouseProfile" />
+  </wsdl:message>
+  <wsdl:message name="GetHouseProfileSFIn">
+    <wsdl:part name="parameters" element="tns:GetHouseProfileSF" />
+  </wsdl:message>
+  <wsdl:message name="GetHouseProfileSFOut">
+    <wsdl:part name="parameters" element="tns:GetHouseProfileSFResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetHouseListIn">
+    <wsdl:part name="parameters" element="tns:GetHouseList" />
+  </wsdl:message>
+  <wsdl:message name="GetHouseListOut">
+    <wsdl:part name="parameters" element="tns:GetHouseListResponse" />
+  </wsdl:message>
+  <wsdl:message name="SetHouseLinkToOrganizationIn">
+    <wsdl:part name="parameters" element="tns:SetHouseLinkToOrganization" />
+  </wsdl:message>
+  <wsdl:message name="SetNewHouseIn">
+    <wsdl:part name="parameters" element="tns:SetNewHouse" />
+  </wsdl:message>
+  <wsdl:message name="SetNewHouseOut">
+    <wsdl:part name="parameters" element="tns:SetNewHouseResponse" />
+  </wsdl:message>
+  <wsdl:message name="SetUnlinkFromOrganizationIn">
+    <wsdl:part name="parameters" element="tns:SetUnlinkFromOrganization" />
+  </wsdl:message>
+  <wsdl:message name="SetNewCompanyIn">
+    <wsdl:part name="parameters" element="tns:SetNewCompany" />
+  </wsdl:message>
+  <wsdl:message name="GetCompanyProfileIn">
+    <wsdl:part name="parameters" element="tns:GetCompanyProfile" />
+  </wsdl:message>
+  <wsdl:message name="GetCompanyProfileOut">
+    <wsdl:part name="parameters" element="tns:GetCompanyProfileResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetCompanyProfileSFIn">
+    <wsdl:part name="parameters" element="tns:GetCompanyProfileSF" />
+  </wsdl:message>
+  <wsdl:message name="GetCompanyProfileSFOut">
+    <wsdl:part name="parameters" element="tns:GetCompanyProfileSFResponse" />
+  </wsdl:message>
+  <wsdl:message name="SetCompanyProfileIn">
+    <wsdl:part name="parameters" element="tns:SetCompanyProfile" />
+  </wsdl:message>
+  <wsdl:message name="GetReportingPeriodListIn">
+    <wsdl:part name="parameters" element="tns:GetReportingPeriodList" />
+  </wsdl:message>
+  <wsdl:message name="GetReportingPeriodListOut">
+    <wsdl:part name="parameters" element="tns:GetReportingPeriodListResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetFileByIDIn">
+    <wsdl:part name="parameters" element="tns:GetFileByID" />
+  </wsdl:message>
+  <wsdl:message name="GetFileByIDOut">
+    <wsdl:part name="parameters" element="tns:GetFileByIDResponse" />
+  </wsdl:message>
+  <wsdl:message name="SetFileDeletedIn">
+    <wsdl:part name="parameters" element="tns:SetFileDeleted" />
+  </wsdl:message>
+  <wsdl:message name="GetFilesInfoFromHouseProfileIn">
+    <wsdl:part name="parameters" element="tns:GetFilesInfoFromHouseProfile" />
+  </wsdl:message>
+  <wsdl:message name="GetFilesInfoFromHouseProfileOut">
+    <wsdl:part name="parameters" element="tns:GetFilesInfoFromHouseProfileResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetFilesInfoFromCompanyProfileIn">
+    <wsdl:part name="parameters" element="tns:GetFilesInfoFromCompanyProfile" />
+  </wsdl:message>
+  <wsdl:message name="GetFilesInfoFromCompanyProfileOut">
+    <wsdl:part name="parameters" element="tns:GetFilesInfoFromCompanyProfileResponse" />
+  </wsdl:message>
+  <wsdl:message name="SetFileToHouseProfileIn">
+    <wsdl:part name="parameters" element="tns:SetFileToHouseProfile" />
+  </wsdl:message>
+  <wsdl:message name="SetFileToHouseProfileOut">
+    <wsdl:part name="parameters" element="tns:SetFileToHouseProfileResponse" />
+  </wsdl:message>
+  <wsdl:message name="SetFileToCompanyProfileIn">
+    <wsdl:part name="parameters" element="tns:SetFileToCompanyProfile" />
+  </wsdl:message>
+  <wsdl:message name="SetFileToCompanyProfileOut">
+    <wsdl:part name="parameters" element="tns:SetFileToCompanyProfileResponse" />
+  </wsdl:message>
+  <wsdl:portType name="ApiSoapPort">
+    <wsdl:operation name="Login">
+      <documentation>Выполняет авторизацию внешней системы и открывает сеанс работы</documentation>
+      <wsdl:input message="tns:LoginIn" />
+      <wsdl:output message="tns:LoginOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Logout">
+      <documentation>Завершает авторизованный сеанс работы внешней системы</documentation>
+      <wsdl:input message="tns:LogoutIn" />
+    </wsdl:operation>
+    <wsdl:operation name="GetRequestList">
+      <documentation>GetRequestList</documentation>
+      <wsdl:input message="tns:GetRequestListIn" />
+      <wsdl:output message="tns:GetRequestListOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SetRequestForSubmit">
+      <documentation>SetRequestForSubmit</documentation>
+      <wsdl:input message="tns:SetRequestForSubmitIn" />
+      <wsdl:output message="tns:SetRequestForSubmitOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetHouseInfo">
+      <documentation>Метод получения идентификатор дома в системе с соответствующим адресом по ФИАС.</documentation>
+      <wsdl:input message="tns:GetHouseInfoIn" />
+      <wsdl:output message="tns:GetHouseInfoOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetHouseProfile">
+      <documentation>Метод возвращает данные текущей анкеты дома с соответствующим ID дома.</documentation>
+      <wsdl:input message="tns:GetHouseProfileIn" />
+      <wsdl:output message="tns:GetHouseProfileOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SetHouseProfile">
+      <documentation>Метод изменяет данные текущей анкеты дома с соответствующим ID дома.</documentation>
+      <wsdl:input message="tns:SetHouseProfileIn" />
+    </wsdl:operation>
+    <wsdl:operation name="GetHouseProfileSF">
+      <documentation>Метод возвращает данные текущей анкеты дома с соответствующим ID дома.</documentation>
+      <wsdl:input message="tns:GetHouseProfileSFIn" />
+      <wsdl:output message="tns:GetHouseProfileSFOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetHouseList">
+      <documentation>Метод получения списка домов, находящихся в управлении организации с соответсвующим ИНН</documentation>
+      <wsdl:input message="tns:GetHouseListIn" />
+      <wsdl:output message="tns:GetHouseListOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SetHouseLinkToOrganization">
+      <documentation>Метод добавления дома с соответсвующим ID, в управление организации с соответствующим ИНН.</documentation>
+      <wsdl:input message="tns:SetHouseLinkToOrganizationIn" />
+    </wsdl:operation>
+    <wsdl:operation name="SetNewHouse">
+      <documentation>Метод добавления нового дома с соответствующим адресом по ФИАС.</documentation>
+      <wsdl:input message="tns:SetNewHouseIn" />
+      <wsdl:output message="tns:SetNewHouseOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SetUnlinkFromOrganization">
+      <documentation>Прекращает управление домом с соответствующим ID</documentation>
+      <wsdl:input message="tns:SetUnlinkFromOrganizationIn" />
+    </wsdl:operation>
+    <wsdl:operation name="SetNewCompany">
+      <documentation>SetNewCompany</documentation>
+      <wsdl:input message="tns:SetNewCompanyIn" />
+    </wsdl:operation>
+    <wsdl:operation name="GetCompanyProfile">
+      <documentation>Метод получения данных анкеты управляющей организации с соответствующим ИНН за указанный отчетный период.</documentation>
+      <wsdl:input message="tns:GetCompanyProfileIn" />
+      <wsdl:output message="tns:GetCompanyProfileOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetCompanyProfileSF">
+      <documentation>Метод получения данных анкеты управляющей организации с соответствующим ИНН за указанный отчетный период.</documentation>
+      <wsdl:input message="tns:GetCompanyProfileSFIn" />
+      <wsdl:output message="tns:GetCompanyProfileSFOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SetCompanyProfile">
+      <documentation>Метод изменяет данные по анкете управляющей организации с соответствующим ИНН за указанный отчетный период.</documentation>
+      <wsdl:input message="tns:SetCompanyProfileIn" />
+    </wsdl:operation>
+    <wsdl:operation name="GetReportingPeriodList">
+      <documentation>GetReportingPeriodList</documentation>
+      <wsdl:input message="tns:GetReportingPeriodListIn" />
+      <wsdl:output message="tns:GetReportingPeriodListOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetFileByID">
+      <documentation>Метод получения файла с соответствующим ID.</documentation>
+      <wsdl:input message="tns:GetFileByIDIn" />
+      <wsdl:output message="tns:GetFileByIDOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SetFileDeleted">
+      <documentation>Метод удаления файла с соответствующим ID.</documentation>
+      <wsdl:input message="tns:SetFileDeletedIn" />
+    </wsdl:operation>
+    <wsdl:operation name="GetFilesInfoFromHouseProfile">
+      <documentation>Метод получения файлов из заданного раздела текущей анкеты дома с соответствующим ID дома.</documentation>
+      <wsdl:input message="tns:GetFilesInfoFromHouseProfileIn" />
+      <wsdl:output message="tns:GetFilesInfoFromHouseProfileOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetFilesInfoFromCompanyProfile">
+      <documentation>Метод получения файлов из заданного раздела анкеты организации с соответствующим ИНН за указанный отчетный период.</documentation>
+      <wsdl:input message="tns:GetFilesInfoFromCompanyProfileIn" />
+      <wsdl:output message="tns:GetFilesInfoFromCompanyProfileOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SetFileToHouseProfile">
+      <documentation>Метод добавления нового файла в заданный раздел текущей анкеты дома с соответствующим ID дома.</documentation>
+      <wsdl:input message="tns:SetFileToHouseProfileIn" />
+      <wsdl:output message="tns:SetFileToHouseProfileOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SetFileToCompanyProfile">
+      <documentation>Метод добавления нового файла в заданный раздел анкеты организации с соответствующим ИНН за указанный отчетный период. Внешняя система может добавлять файлы в анкеты организаций, по которым разрешена подписка на раскрытие.</documentation>
+      <wsdl:input message="tns:SetFileToCompanyProfileIn" />
+      <wsdl:output message="tns:SetFileToCompanyProfileOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="ApiSoapBinding" type="tns:ApiSoapPort">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="Login">
+      <soap:operation soapAction="http://api-beta.reformagkh.ru/api_document_literal#Login" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Logout">
+      <soap:operation soapAction="http://api-beta.reformagkh.ru/api_document_literal#Logout" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+    </wsdl:operation>
+    <wsdl:operation name="GetRequestList">
+      <soap:operation soapAction="http://api-beta.reformagkh.ru/api_document_literal#GetRequestList" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SetRequestForSubmit">
+      <soap:operation soapAction="http://api-beta.reformagkh.ru/api_document_literal#SetRequestForSubmit" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetHouseInfo">
+      <soap:operation soapAction="http://api-beta.reformagkh.ru/api_document_literal#GetHouseInfo" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetHouseProfile">
+      <soap:operation soapAction="http://api-beta.reformagkh.ru/api_document_literal#GetHouseProfile" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SetHouseProfile">
+      <soap:operation soapAction="http://api-beta.reformagkh.ru/api_document_literal#SetHouseProfile" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+    </wsdl:operation>
+    <wsdl:operation name="GetHouseProfileSF">
+      <soap:operation soapAction="http://api-beta.reformagkh.ru/api_document_literal#GetHouseProfileSF" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetHouseList">
+      <soap:operation soapAction="http://api-beta.reformagkh.ru/api_document_literal#GetHouseList" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SetHouseLinkToOrganization">
+      <soap:operation soapAction="http://api-beta.reformagkh.ru/api_document_literal#SetHouseLinkToOrganization" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+    </wsdl:operation>
+    <wsdl:operation name="SetNewHouse">
+      <soap:operation soapAction="http://api-beta.reformagkh.ru/api_document_literal#SetNewHouse" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SetUnlinkFromOrganization">
+      <soap:operation soapAction="http://api-beta.reformagkh.ru/api_document_literal#SetUnlinkFromOrganization" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+    </wsdl:operation>
+    <wsdl:operation name="SetNewCompany">
+      <soap:operation soapAction="http://api-beta.reformagkh.ru/api_document_literal#SetNewCompany" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+    </wsdl:operation>
+    <wsdl:operation name="GetCompanyProfile">
+      <soap:operation soapAction="http://api-beta.reformagkh.ru/api_document_literal#GetCompanyProfile" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetCompanyProfileSF">
+      <soap:operation soapAction="http://api-beta.reformagkh.ru/api_document_literal#GetCompanyProfileSF" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SetCompanyProfile">
+      <soap:operation soapAction="http://api-beta.reformagkh.ru/api_document_literal#SetCompanyProfile" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+    </wsdl:operation>
+    <wsdl:operation name="GetReportingPeriodList">
+      <soap:operation soapAction="http://api-beta.reformagkh.ru/api_document_literal#GetReportingPeriodList" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetFileByID">
+      <soap:operation soapAction="http://api-beta.reformagkh.ru/api_document_literal#GetFileByID" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SetFileDeleted">
+      <soap:operation soapAction="http://api-beta.reformagkh.ru/api_document_literal#SetFileDeleted" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+    </wsdl:operation>
+    <wsdl:operation name="GetFilesInfoFromHouseProfile">
+      <soap:operation soapAction="http://api-beta.reformagkh.ru/api_document_literal#GetFilesInfoFromHouseProfile" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetFilesInfoFromCompanyProfile">
+      <soap:operation soapAction="http://api-beta.reformagkh.ru/api_document_literal#GetFilesInfoFromCompanyProfile" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SetFileToHouseProfile">
+      <soap:operation soapAction="http://api-beta.reformagkh.ru/api_document_literal#SetFileToHouseProfile" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SetFileToCompanyProfile">
+      <soap:operation soapAction="http://api-beta.reformagkh.ru/api_document_literal#SetFileToCompanyProfile" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="ApiSoapService">
+    <wsdl:port name="ApiSoapPort" binding="tns:ApiSoapBinding">
+      <soap:address location="http://api-beta.reformagkh.ru/api_document_literal" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
