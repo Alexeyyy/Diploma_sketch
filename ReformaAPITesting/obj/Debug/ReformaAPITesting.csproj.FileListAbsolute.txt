@@ -18,3 +18,13 @@ F:\Университет\4 курс\Диплом\Diploma_sketch\ReformaAPITesti
 F:\Университет\4 курс\Диплом\Diploma_sketch\ReformaAPITesting\bin\Debug\Microsoft.ServiceBus.xml
 F:\Университет\4 курс\Диплом\Diploma_sketch\ReformaAPITesting\bin\Debug\Microsoft.WindowsAzure.Configuration.xml
 F:\Университет\4 курс\Диплом\Diploma_sketch\ReformaAPITesting\obj\Debug\ReformaAPITesting.csprojResolveAssemblyReference.cache
+D:\Обучение\ReformaAPITesting\Diploma_sketch\ReformaAPITesting\bin\Debug\ReformaAPITesting.exe.config
+D:\Обучение\ReformaAPITesting\Diploma_sketch\ReformaAPITesting\obj\Debug\ReformaAPITesting.exe
+D:\Обучение\ReformaAPITesting\Diploma_sketch\ReformaAPITesting\obj\Debug\ReformaAPITesting.pdb
+D:\Обучение\ReformaAPITesting\Diploma_sketch\ReformaAPITesting\obj\Debug\ReformaAPITesting.csprojResolveAssemblyReference.cache
+D:\Обучение\ReformaAPITesting\Diploma_sketch\ReformaAPITesting\bin\Debug\ReformaAPITesting.exe
+D:\Обучение\ReformaAPITesting\Diploma_sketch\ReformaAPITesting\bin\Debug\ReformaAPITesting.pdb
+D:\Обучение\ReformaAPITesting\Diploma_sketch\ReformaAPITesting\bin\Debug\Microsoft.ServiceBus.dll
+D:\Обучение\ReformaAPITesting\Diploma_sketch\ReformaAPITesting\bin\Debug\Microsoft.WindowsAzure.Configuration.dll
+D:\Обучение\ReformaAPITesting\Diploma_sketch\ReformaAPITesting\bin\Debug\Microsoft.ServiceBus.xml
+D:\Обучение\ReformaAPITesting\Diploma_sketch\ReformaAPITesting\bin\Debug\Microsoft.WindowsAzure.Configuration.xml
