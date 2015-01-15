@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using ReformaAPITesting.ReformaAPI;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
@@ -8,136 +9,248 @@ using System.ServiceModel.Configuration;
 
 namespace ReformaAPITesting
 {
-    public static class SessionKey 
+    public class APIProvider
     {
-        public static string LogKey { get; set; } 
+        private static string login = "a.zhelepov";
+        private static string password = "!ALEX!()$!(($!";
+        private LoginResponse loginResponse;
+        private ApiSoapPortClient client;
+
+        public APIProvider(ApiSoapPortClient client)
+        {
+            this.client = client;
+            this.loginResponse = new LoginResponse();
+        }
+
+        #region Helpers
+
+        /// <summary>
+        /// Создать объект FiasAddress 
+        /// </summary>
+        /// <param name="cityId">Id города</param>
+        /// <param name="streetId">Id улицы</param>
+        /// <param name="building">Здание</param>
+        /// <param name="houseNumber">Номер дома</param>
+        /// <param name="block">Блок/корпус</param>
+        /// <param name="roomNumber">Номер квартиры/комнаты</param>
+        /// <returns></returns>
+        public FiasAddress FillAddress(string cityId, string streetId, string building,
+                                      string houseNumber, string block, string roomNumber)
+        {
+            return new FiasAddress()
+            {
+                city_id = cityId,
+                street_id = streetId,
+                building = building,
+                house_number = houseNumber,
+                block = block,
+                room_number = roomNumber
+            };
+        }
+
+        public CountDismissed FillCountDismissed(int? countDismissed, int? countDismissedAdmins,
+                                                 int? countDismissedEngineers, int? countDismissedWorkers)
+        {
+            return new CountDismissed()
+            {
+                count_dismissed = countDismissed,
+                count_dismissed_admins = countDismissedAdmins,
+                count_dismissed_engineers = countDismissedEngineers,
+                count_dismissed_workers = countDismissedWorkers
+            };
+        }
+
+        #endregion
+
+        #region Обеспечение доступа
+
+        /// <summary>
+        /// Метод выполняет авторизацию внешней системы и открывает сеанс работы.
+        /// </summary>
+        public void Login()
+        {
+            this.client.Endpoint.Behaviors.Add(new AuthHeaderBehavior(new TokenProvider(string.Empty)));
+            this.loginResponse.LoginResult = this.client.Login(login, password);
+            //для перехвата xml-сообщения
+            (this.client.Endpoint.Behaviors.First(i => i.GetType() == typeof(AuthHeaderBehavior)) as AuthHeaderBehavior).TokenProvider.LogKey = loginResponse.LoginResult;
+        }
+
+        /// <summary>
+        /// Метод завершает авторизованный сеанс работы внешней системы
+        /// </summary>
+        public void Logout()
+        {
+            this.client.Logout();
+        }
+
+        #endregion
+
+        #region Получить информацию с реформы
+
+        /// <summary>
+        /// Метод возвращает список запросов подписки на управляющую организацию, поданных внешней системой (с детализацией статуса запроса).
+        /// </summary>
+        /// <returns></returns>
+        public RequestState[] GetRequestList()
+        {
+            return this.client.GetRequestList();
+        }
+
+        /// <summary>
+        /// Метод возвращает список отчетных периодов системы
+        /// </summary>
+        /// <returns></returns>
+        public ReportingPeriod[] GetReportingPeriodList()
+        {
+            return client.GetReportingPeriodList();
+        }
+
+        #endregion
+
+        #region Поставить информацию реформе
+
+        /// <summary>
+        /// Метод подачи запроса на раскрытие данных. Внешняя система подает на вход список ИНН управляющих организаций, по которым собирается раскрывать данные 
+        /// </summary>
+        /// <param name="inns">ИНН организаций</param>
+        /// <returns></returns>
+        public SetRequestForSubmitInnStatus[] SetRequestForSubmit(string[] inns)
+        {
+            return this.client.SetRequestForSubmit(inns);
+        }
+
+        public void SetCompanyProfile(string inn, int reportingPeriodId)
+        {
+            this.client.SetCompanyProfile(inn, reportingPeriodId, new CompanyProfileData());
+        }
+
+        /// <summary>
+        /// Метод изменяет данные по текущей/архивной анкете управляющей организации с соответствующим ИНН за указанный отчетный период. Внешняя система может обновлять анкеты только тех организаций, по которым разрешена подписка.
+        /// </summary>
+        /// <returns></returns>
+        public CompanyProfileData SetCompanyProfile(string fullName, string shortName, int okopf, string surname,
+                                                    string middleName, string firstName, string position, string ogrn,
+                                                    DateTime assignmentOgrnDate, string authorityNameAssigningOgrn,
+                                                    FiasAddress legalAddress, FiasAddress actualAddress, FiasAddress postAddress,
+                                                    string phone, string email, string site, float? proportion_sf,
+                                                    float? proportion_mo, string additionallInfoFreeForm, string associationParticipations,
+                                                    int srfCount, int moCount, int officesCount, int staffRegularTotal, int staffRegularAdministrative,
+                                                    int staffRegularEngineers, int staffRegularLabour, CountDismissed countDismissed,
+                                                    int? accidentsCount, int? prosecuteCount, string prosecuteDocumentsCount, string tsgManagementManagers,
+                                                    string auditCommisionMembers, string additionalInfoFreeForm,
+                                                    string workTime = ""
+                                                    )
+        {
+            //какой-то доп. код, например, проверки различные
+
+            return new CompanyProfileData()
+            {
+                name_full = fullName,
+                name_short = shortName,
+                okopf = okopf,
+                surname = surname,
+                middlename = middleName,
+                firstname = firstName,
+                position = position,
+                ogrn = ogrn,
+                date_assignment_ogrn = assignmentOgrnDate,
+                name_authority_assigning_ogrn = authorityNameAssigningOgrn,
+                legal_address = legalAddress,
+                actual_address = actualAddress,
+                post_address = postAddress,
+                work_time = workTime,
+                phone = phone,
+                email = email,
+                site = site,
+                proportion_sf = proportion_sf,
+                proportion_mo = proportion_mo,
+                additional_info_freeform = additionallInfoFreeForm,
+                participation_in_associations = associationParticipations,
+                srf_count = srfCount,
+                mo_count = moCount,
+                offices_count = officesCount,
+                staff_regular_total = staffRegularTotal,
+                staff_regular_administrative = staffRegularAdministrative,
+                staff_regular_engineers = staffRegularEngineers,
+                staff_regular_labor = staffRegularLabour,
+                count_dismissed = countDismissed,
+                accidents_count = accidentsCount,
+                prosecute_count = prosecuteCount,
+                prosecute_copies_of_documents = prosecuteDocumentsCount,
+                tsg_management_members = tsgManagementManagers,
+                audit_commision_members = auditCommisionMembers,
+            };
+        }
+
+        //Метод возвращает 
+        #endregion
     }
-    
-    /*
-    #region Новый вариант 2
-    public class InterceptorMessageInspector : IClientMessageInspector
-    {
-        public void AfterReceiveReply(ref Message reply, object correlationState) 
-        {
-            Console.WriteLine(reply.Headers.Count);
-            Console.WriteLine("!!!!!!!!!!!!!!!!");
-        }
 
-        public object BeforeSendRequest(ref Message request, IClientChannel channel)
+    //=====================================================
+    public class TokenProvider
+    {
+        public string LogKey { get; set; }
+        public TokenProvider(string logKey)
         {
-            throw new NotImplementedException();
+            LogKey = logKey;
         }
     }
 
-    public class InterceptorBehaviour : IEndpointBehavior 
+    public class AuthHeaderBehavior : IEndpointBehavior, IClientMessageInspector
     {
-        public void ApplyClientBehaviour(ServiceEndpoint endpoint, ClientRuntime clientRuntime) 
-        {
-            clientRuntime.MessageInspectors.Add(new InterceptorMessageInspector());
-        }
+        public TokenProvider TokenProvider { get; set; }
 
-        public void AddBindingParameters(ServiceEndpoint endpoint, BindingParameterCollection bindingParameters)
+        public AuthHeaderBehavior(TokenProvider tokenProvider)
         {
-            throw new NotImplementedException();
-        }
-
-        public void ApplyClientBehavior(ServiceEndpoint endpoint, ClientRuntime clientRuntime)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void ApplyDispatchBehavior(ServiceEndpoint endpoint, EndpointDispatcher endpointDispatcher)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Validate(ServiceEndpoint endpoint)
-        {
-            throw new NotImplementedException();
-        }
-    }
-    #endregion
-
-    #region Новый вариант
-    public class MyBehaviour : BehaviorExtensionElement, IEndpointBehavior
-    {
-        private string headerKey = "authenticate";
-        public MyBehaviour() { }
-
-        public void ApplyClientBehavior(ServiceEndpoint endpoint, ClientRuntime clientRuntime)
-        {
-            clientRuntime.MessageInspectors.Add(new MyInspector());
-        }
-        public void ApplyDispatchBehavior(ServiceEndpoint endpoint, EndpointDispatcher endpointDispatcher)
-        {
-            endpointDispatcher.DispatchRuntime.MessageInspectors.Add(new MyInspector());
+            this.TokenProvider = tokenProvider;
         }
 
         public void AddBindingParameters(ServiceEndpoint endpoint, BindingParameterCollection bindingParameters) { }
-        public void Validate(ServiceEndpoint endpoint) { }
-
-        protected override object CreateBehavior()
-        {
-            return new MyBehaviour();
-        }
-
-        public override Type BehaviorType
-        {
-            get
-            {
-                return typeof(MyBehaviour);
-            }
-        }
-        /*public void AfterReceiveReply(ref Message reply, object correlationState) { }
-
-        public object BeforeSendRequest(ref Message request, IClientChannel channel)
-        {
-            request.Headers.Add(MessageHeader.CreateHeader(headerKey, string.Empty, SessionKey.LogKey));
-            return null;
-        }*/
-    }
-
-    public class MyInspector : IClientMessageInspector, IDispatchMessageInspector
-    {
-        private const string headerKey = "authenticate";
-
-        public object BeforeSendRequest(ref Message request, IClientChannel channel)
-        {
-            request.Headers.Add(MessageHeader.CreateHeader(headerKey, string.Empty, SessionKey.LogKey));
-            return null;
-        }
-
-        public object AfterReceiveRequest(ref Message request, IClientChannel channel, InstanceContext instanceContext)
-        {
-            return null;
-        }
 
         public void AfterReceiveReply(ref Message reply, object correlationState) { }
-        public void BeforeSendReply(ref Message reply, object correlationState) { }
+
+        public void ApplyClientBehavior(ServiceEndpoint endpoint, ClientRuntime clientRuntime)
+        {
+            clientRuntime.MessageInspectors.Add(this);
+        }
+
+        public void ApplyDispatchBehavior(ServiceEndpoint endpoint, EndpointDispatcher endpointDispatcher) { }
+
+        public object BeforeSendRequest(ref Message request, IClientChannel channel)
+        {
+            if (!String.IsNullOrEmpty(this.TokenProvider.LogKey))
+                request.Headers.Add(MessageHeader.CreateHeader("authenticate", string.Empty, this.TokenProvider.LogKey));
+            return null;
+        }
+
+        public void Validate(ServiceEndpoint endpoint) { }
     }
-    #endregion
-    */
+
     public class Program
     {
         /*
-         1. Метод логин (Login)
-         2. SetRequestForSubmit - подача на раскрытие информации управляющих организаций.
-         3. GetRequestList - список запросов подписки на управляющую организацию
-         4. GetReportingPeriodList - отчетные периоды системы
-         5. SetCompanyProfile - изменяет данные по текущей/архивной анкете УО с соотв. ИНН за указанный
-                                отчетный период. Внешняя система может обновлять анкеты только тех организаций, 
-                                по которым разрешена подписка 
-         6. GetHouseList - список домов в управлении конкретной организации
-         7. GetHouseInfo - данные по дому
+        1. Метод логин (Login)
+        2. SetRequestForSubmit - подача на раскрытие информации управляющих организаций.
+        3. GetRequestList - список запросов подписки на управляющую организацию
+        4. GetReportingPeriodList - отчетные периоды системы
+        5. SetCompanyProfile - изменяет данные по текущей/архивной анкете УО с соотв. ИНН за указанный
+                               отчетный период. Внешняя система может обновлять анкеты только тех организаций, 
+                               по которым разрешена подписка 
+        6. GetHouseList - список домов в управлении конкретной организации
+        7. GetHouseInfo - данные по дому
+        * 
+        * http://stackoverflow.com/questions/14621544/how-can-i-add-authorization-header-to-the-request-in-wcf
+        * http://stackoverflow.com/questions/3879199/intercept-soap-messages-from-and-to-a-web-service-at-the-client
+        * http://blogs.msdn.com/b/stcheng/archive/2009/02/21/wcf-how-to-inspect-and-modify-wcf-message-via-custom-messageinspector.aspx
+        * http://msdn.microsoft.com/en-us/library/ms733786(v=vs.110).aspx
+        * 
+        * Custom endpoint behaviour
+        * http://stackoverflow.com/questions/10448327/edit-soap-of-a-wcf-service-using-iclientmessageinspector  ???
+        * http://burcakcakiroglu.com/defining-custom-wcf-endpoint-behavior/
+        *
+         * http://stackoverflow.com/questions/643241/problem-with-wcf-client-calling-one-way-operation - logout problem
+         * http://go4answers.webhost4life.com/Example/exception-while-making-way-call-wcf-56416.aspx
          * 
-         * http://stackoverflow.com/questions/14621544/how-can-i-add-authorization-header-to-the-request-in-wcf
-         * http://stackoverflow.com/questions/3879199/intercept-soap-messages-from-and-to-a-web-service-at-the-client
-         * http://blogs.msdn.com/b/stcheng/archive/2009/02/21/wcf-how-to-inspect-and-modify-wcf-message-via-custom-messageinspector.aspx
-         * http://msdn.microsoft.com/en-us/library/ms733786(v=vs.110).aspx
-         * 
-         * Custom endpoint behaviour
-         * http://stackoverflow.com/questions/10448327/edit-soap-of-a-wcf-service-using-iclientmessageinspector  ???
-         * http://burcakcakiroglu.com/defining-custom-wcf-endpoint-behavior/
          */
         public static string LOGIN = "a.zhelepov";
         public static string PASSWORD = "!ALEX!()$!(($!";
@@ -145,37 +258,31 @@ namespace ReformaAPITesting
 
         static void Main(string[] args)
         {
-            //ApiSoapPortClient client = new ApiSoapPortClient(new BasicHttpBinding("ApiSoapBinding", new EndpointAddress());
+            APIProvider provider = new APIProvider(new ApiSoapPortClient());
+            provider.Login();
+            RequestState[] states = provider.GetRequestList();
+            provider.Logout();
+
             LoginResponse response = new LoginResponse();
             LoginRequest request = new LoginRequest(LOGIN, PASSWORD);
             SetRequestForSubmitInnStatus[] statuses;
-            RequestState[] states;
             FiasAddress address = new ReformaAPI.FiasAddress();
             ApiSoapPortClient client = new ApiSoapPortClient(new BasicHttpBinding("ApiSoapBinding"), new EndpointAddress(endpointAddress));
+            TokenProvider token = new TokenProvider("");
+            AuthHeaderBehavior behaviour = new AuthHeaderBehavior(token);
+            client.Endpoint.Behaviors.Add(new AuthHeaderBehavior(token));
+
             try
             {
                 Console.WriteLine("Before connection status: " + client.State.ToString());
                 response.LoginResult = client.Login(LOGIN, PASSWORD);
-                SessionKey.LogKey = response.LoginResult; 
+                (client.Endpoint.Behaviors[2] as AuthHeaderBehavior).TokenProvider.LogKey = response.LoginResult;
                 Console.WriteLine("After connection status: " + client.State.ToString());
             }
             catch (Exception e)
             {
-                Console.WriteLine("**********Login exception*************");
+                Console.WriteLine("Error 1");
                 Console.WriteLine(e.Message);
-                Console.WriteLine("**************************************");
-            }
-
-            //client.Endpoint.Behaviors.Insert(0, new MyBehaviour());
-            InterceptorBehaviour b = new InterceptorBehaviour();
-            client.ChannelFactory.Endpoint.Behaviors.Insert(0, new InterceptorBehaviour());
-            
-            Console.WriteLine("Behaviours count = " + client.Endpoint.Behaviors.Count);
-            foreach (var item in client.Endpoint.Behaviors) 
-            {
-                Console.WriteLine(item.GetType().Name);
-                //if (item.GetType().Name.Equals("MyBehaviour"))
-                    //item.
             }
 
             try
@@ -184,24 +291,21 @@ namespace ReformaAPITesting
             }
             catch (Exception e)
             {
+                Console.WriteLine("Error 2");
                 Console.WriteLine(e.Message);
             }
 
-            /*try
+            try
             {
                 client.Logout();
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-            }*/
+            }
 
+            Console.WriteLine("Finished!");
             Console.ReadLine();
-        }
-
-        public static void l_CustomDrawingPart()
-        {
-            Console.WriteLine("Custom part!");
         }
     }
 }
