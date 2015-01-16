@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection;
+using System.Collections.Generic;
 using ReformaAPITesting.ReformaAPI;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
@@ -9,17 +11,26 @@ using System.ServiceModel.Configuration;
 
 namespace ReformaAPITesting
 {
+    public class Test 
+    {
+        public int IntVal { get; set; }
+        public string StringVal { get; set; }
+        public FiasAddress AddressVal { get; set; }
+        public double DoubleVal { get; set; }
+    }
     public class APIProvider
     {
         private static string login = "a.zhelepov";
         private static string password = "!ALEX!()$!(($!";
         private LoginResponse loginResponse;
         private ApiSoapPortClient client;
+        private Dictionary<string, KeyValuePair<Type, object>> valuesDictionary;
 
         public APIProvider(ApiSoapPortClient client)
         {
             this.client = client;
             this.loginResponse = new LoginResponse();
+            this.valuesDictionary = new Dictionary<string, KeyValuePair<Type, object>>();
         }
 
         #region Helpers
@@ -34,35 +45,69 @@ namespace ReformaAPITesting
         /// <param name="block">Блок/корпус</param>
         /// <param name="roomNumber">Номер квартиры/комнаты</param>
         /// <returns></returns>
-        public FiasAddress FillAddress(string cityId, string streetId, string building,
-                                      string houseNumber, string block, string roomNumber)
+        public FiasAddress FillAddress(string city_id, string street_id, string building,
+                                      string house_number, string block, string room_number)
         {
             return new FiasAddress()
             {
-                city_id = cityId,
-                street_id = streetId,
+                city_id = city_id,
+                street_id = street_id,
                 building = building,
-                house_number = houseNumber,
+                house_number = house_number,
                 block = block,
-                room_number = roomNumber
+                room_number = room_number
             };
         }
 
-        public CountDismissed FillCountDismissed(int? countDismissed, int? countDismissedAdmins,
-                                                 int? countDismissedEngineers, int? countDismissedWorkers)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="countDismissed"></param>
+        /// <param name="countDismissedAdmins"></param>
+        /// <param name="countDismissedEngineers"></param>
+        /// <param name="countDismissedWorkers"></param>
+        /// <returns></returns>
+        public CountDismissed FillCountDismissed(int? count_dismissed, int? count_dismissed_admins,
+                                                 int? count_dismissed_engineers, int? count_dismissed_workers)
         {
             return new CountDismissed()
             {
-                count_dismissed = countDismissed,
-                count_dismissed_admins = countDismissedAdmins,
-                count_dismissed_engineers = countDismissedEngineers,
-                count_dismissed_workers = countDismissedWorkers
+                count_dismissed = count_dismissed,
+                count_dismissed_admins = count_dismissed_admins,
+                count_dismissed_engineers = count_dismissed_engineers,
+                count_dismissed_workers = count_dismissed_workers
+            };
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="housesCountUnderMngReportDate"></param>
+        /// <param name="servicedByCompetition"></param>
+        /// <param name="servicedByOwnerUO"></param>
+        /// <param name="servicedByTSG"></param>
+        /// <param name="servicedByTSGUO"></param>
+        /// <returns></returns>
+        public CountHousesUnderMngReportDate FillCountHousesUnderMngReportDate(int count_houses_under_mng_report_date,
+                                                                               int? serviced_by_competition,
+                                                                               int? serviced_by_owner_uo,
+                                                                               int? serviced_by_tsg,
+                                                                               int? serviced_by_tsg_uo
+                                                                              ) 
+        {   
+            return new CountHousesUnderMngReportDate()
+            {
+                count_houses_under_mng_report_date = count_houses_under_mng_report_date,
+                serviced_by_competition = serviced_by_competition,
+                serviced_by_owner_uo = serviced_by_owner_uo,
+                serviced_by_tsg = serviced_by_tsg,
+                serviced_by_tsg_uo = serviced_by_tsg_uo
             };
         }
 
         #endregion
 
-        #region Обеспечение доступа
+        #region Обеспечение доступа к удаленному серверу
 
         /// <summary>
         /// Метод выполняет авторизацию внешней системы и открывает сеанс работы.
@@ -137,7 +182,8 @@ namespace ReformaAPITesting
                                                     int srfCount, int moCount, int officesCount, int staffRegularTotal, int staffRegularAdministrative,
                                                     int staffRegularEngineers, int staffRegularLabour, CountDismissed countDismissed,
                                                     int? accidentsCount, int? prosecuteCount, string prosecuteDocumentsCount, string tsgManagementManagers,
-                                                    string auditCommisionMembers, string additionalInfoFreeForm,
+                                                    string auditCommisionMembers, string additionalInfoFreeForm, int residentsCount,
+                                                    CountHousesUnderMngReportDate housesUnderMngReportDateCount, 
                                                     string workTime = ""
                                                     )
         {
@@ -179,6 +225,42 @@ namespace ReformaAPITesting
                 prosecute_copies_of_documents = prosecuteDocumentsCount,
                 tsg_management_members = tsgManagementManagers,
                 audit_commision_members = auditCommisionMembers,
+                residents_count = residentsCount,
+                count_houses_under_mng_report_date = housesUnderMngReportDateCount
+            };
+        }
+
+        public Test FillTest(FiasAddress AddressVal, double DoubleVal, int IntVal, string StringVal) 
+        {
+            var hack = new { AddressVal, DoubleVal, IntVal, StringVal };
+            var parameters = MethodBase.GetCurrentMethod().GetParameters()[0].;
+            Test test = new Test();
+            
+            foreach (var item in test.GetType().GetProperties()) 
+            {
+                
+            }
+
+            //filling dictionary
+            foreach(var item in test.GetType().GetProperties()) 
+            {
+                valuesDictionary.Add(item.Name, new KeyValuePair<Type,object>(hack.GetType().GetProperties().First(i => i.Name == item.Name).PropertyType, 
+                                                                              hack.GetType().GetProperties().First(i => i.Name == item.Name).GetValue(hack, null)));
+            }
+
+
+            foreach (var item in valuesDictionary) 
+            {
+                Console.WriteLine("{0} = {1} *** {2}", item.Key, item.Value.Key.Name, item.Value.Value);
+            }
+            
+            return new Test()
+            {
+                
+                AddressVal = AddressVal,
+                DoubleVal = DoubleVal,
+                IntVal = IntVal, 
+                StringVal = StringVal
             };
         }
 
@@ -259,6 +341,7 @@ namespace ReformaAPITesting
         static void Main(string[] args)
         {
             APIProvider provider = new APIProvider(new ApiSoapPortClient());
+            Test t = provider.FillTest(provider.FillAddress("1", "2", "3", "4", "5", "6"), 10.5, 20, "Hello!");
             provider.Login();
             RequestState[] states = provider.GetRequestList();
             provider.Logout();

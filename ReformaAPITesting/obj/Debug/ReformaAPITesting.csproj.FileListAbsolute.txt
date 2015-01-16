@@ -28,3 +28,13 @@ D:\Обучение\ReformaAPITesting\Diploma_sketch\ReformaAPITesting\bin\Debug
 D:\Обучение\ReformaAPITesting\Diploma_sketch\ReformaAPITesting\bin\Debug\Microsoft.WindowsAzure.Configuration.dll
 D:\Обучение\ReformaAPITesting\Diploma_sketch\ReformaAPITesting\bin\Debug\Microsoft.ServiceBus.xml
 D:\Обучение\ReformaAPITesting\Diploma_sketch\ReformaAPITesting\bin\Debug\Microsoft.WindowsAzure.Configuration.xml
+D:\Intelsoft\Reforma\Diploma_sketch\ReformaAPITesting\bin\Debug\ReformaAPITesting.exe.config
+D:\Intelsoft\Reforma\Diploma_sketch\ReformaAPITesting\obj\Debug\ReformaAPITesting.exe
+D:\Intelsoft\Reforma\Diploma_sketch\ReformaAPITesting\obj\Debug\ReformaAPITesting.pdb
+D:\Intelsoft\Reforma\Diploma_sketch\ReformaAPITesting\bin\Debug\ReformaAPITesting.exe
+D:\Intelsoft\Reforma\Diploma_sketch\ReformaAPITesting\bin\Debug\ReformaAPITesting.pdb
+D:\Intelsoft\Reforma\Diploma_sketch\ReformaAPITesting\bin\Debug\Microsoft.ServiceBus.dll
+D:\Intelsoft\Reforma\Diploma_sketch\ReformaAPITesting\bin\Debug\Microsoft.WindowsAzure.Configuration.dll
+D:\Intelsoft\Reforma\Diploma_sketch\ReformaAPITesting\bin\Debug\Microsoft.ServiceBus.xml
+D:\Intelsoft\Reforma\Diploma_sketch\ReformaAPITesting\bin\Debug\Microsoft.WindowsAzure.Configuration.xml
+D:\Intelsoft\Reforma\Diploma_sketch\ReformaAPITesting\obj\Debug\ReformaAPITesting.csprojResolveAssemblyReference.cache
