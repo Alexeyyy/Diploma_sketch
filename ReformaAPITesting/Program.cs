@@ -149,6 +149,7 @@ namespace ReformaAPITesting
         {
             return client.GetReportingPeriodList();
         }
+       
 
         #endregion
 
@@ -233,7 +234,7 @@ namespace ReformaAPITesting
         public Test FillTest(FiasAddress AddressVal, double DoubleVal, int IntVal, string StringVal) 
         {
             var hack = new { AddressVal, DoubleVal, IntVal, StringVal };
-            var parameters = MethodBase.GetCurrentMethod().GetParameters()[0].;
+            var parameters = MethodBase.GetCurrentMethod().GetParameters();
             Test test = new Test();
             
             foreach (var item in test.GetType().GetProperties()) 
@@ -340,11 +341,12 @@ namespace ReformaAPITesting
 
         static void Main(string[] args)
         {
-            APIProvider provider = new APIProvider(new ApiSoapPortClient());
+            /*APIProvider provider = new APIProvider(new ApiSoapPortClient());
             Test t = provider.FillTest(provider.FillAddress("1", "2", "3", "4", "5", "6"), 10.5, 20, "Hello!");
             provider.Login();
             RequestState[] states = provider.GetRequestList();
-            provider.Logout();
+            ReportingPeriod[] periods = provider.GetReportingPeriodList();
+            provider.Logout();*/
 
             LoginResponse response = new LoginResponse();
             LoginRequest request = new LoginRequest(LOGIN, PASSWORD);
@@ -354,7 +356,7 @@ namespace ReformaAPITesting
             TokenProvider token = new TokenProvider("");
             AuthHeaderBehavior behaviour = new AuthHeaderBehavior(token);
             client.Endpoint.Behaviors.Add(new AuthHeaderBehavior(token));
-
+            
             try
             {
                 Console.WriteLine("Before connection status: " + client.State.ToString());
@@ -378,11 +380,25 @@ namespace ReformaAPITesting
                 Console.WriteLine(e.Message);
             }
 
+            //Дома в управлении
+            HouseData[] data = client.GetHouseList("7329012644");
+            Console.WriteLine("Дома в управлении, количество - " + data.Count());
+            foreach (var item in data) 
+            {
+                Console.WriteLine(item.house_id);
+            }
+            Console.WriteLine("================================");
+
+            //Установка дома в управление
+            //client.SetNewHouse(new FiasAddress() { street_id = "1", city_id = "1", street_id = "1", building = "Здание", block = "Блок", house_number = "1", room_number = "101"}, );
+
+            //client.Logout();
+
             try
             {
                 client.Logout();
             }
-            catch (Exception e)
+            catch (ProtocolException e)
             {
                 Console.WriteLine(e.Message);
             }
