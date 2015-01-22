@@ -382,18 +382,36 @@ namespace ReformaAPITesting
 
             //Дома в управлении
             HouseData[] data = client.GetHouseList("7329012644");
+            data = data.OrderBy(i => i.full_address.street_formal_name).ToArray();
             Console.WriteLine("Дома в управлении, количество - " + data.Count());
             foreach (var item in data) 
             {
-                Console.WriteLine(item.house_id);
+                Console.WriteLine("=========================================================");
+                Console.WriteLine("RegionName = {0}, CityName = {1}, StreetFormalName = {2}, HouseNumber = {3}", item.full_address.region_formal_name, item.full_address.city1_formal_name, item.full_address.street_formal_name, item.full_address.house_number);
+                Console.WriteLine("RegionId = {0}, CityId = {1}, StreetId = {2}, HouseId = {3}", item.full_address.region_guid, item.full_address.city1_guid, item.full_address.street_guid, item.house_id);
+                Console.WriteLine("=========================================================");
             }
-            Console.WriteLine("================================");
 
-            //Установка дома в управление
+            //Получение данных по интересующему дому
+            HouseInfo[] info = client.GetHouseInfo(new FiasAddress() { city_id = "73b29372-242c-42c5-89cd-8814bc2368af", street_id = "312c73ca-652a-4a7d-b95e-783e9d99ea10", house_number = "9" });
+            //client.SetUnlinkFromOrganization(8920471, DateTime.Now, 1, "Тестовая причина");
+            GetHouseProfileResponse re = client.GetHouseProfile(8920471);
+
+            //client.
+            //GetHouseProfileSFResponse c = client.GetHouseProfileSF("fee76045-fe22-43a4-ad58-ad99e903bd58", 1);
+
+            //Установка дома в управление организации
+            try
+            {
+                client.SetNewHouse(new FiasAddress() { city_id = "1", street_id = "1", block = "1", building = "1", house_number = "1", room_number = "1" }, 1);
+            }
+            catch (Exception m) 
+            {
+                Console.WriteLine(m.Message);
+            }
             //client.SetNewHouse(new FiasAddress() { street_id = "1", city_id = "1", street_id = "1", building = "Здание", block = "Блок", house_number = "1", room_number = "101"}, );
-
-            //client.Logout();
-
+            //client.Endpoint.Behaviors.RemoveAt(client.Endpoint.Behaviors.IndexOf(client.Endpoint.Behaviors.First(i => i.GetType() == typeof(AuthHeaderBehavior))));
+            
             try
             {
                 client.Logout();
