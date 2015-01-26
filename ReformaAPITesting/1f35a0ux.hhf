@@ -20,7 +20,6 @@ namespace ReformaAPITesting
     }
     public class APIProvider
     {
-        public static bool isA = false;
         private static string login = "a.zhelepov";
         private static string password = "!ALEX!()$!(($!";
         private LoginResponse loginResponse;
@@ -302,7 +301,7 @@ namespace ReformaAPITesting
 
         public object BeforeSendRequest(ref Message request, IClientChannel channel)
         {
-            request.Headers.Clear();
+            
             if (!String.IsNullOrEmpty(this.TokenProvider.LogKey))
                 request.Headers.Add(MessageHeader.CreateHeader("authenticate", string.Empty, this.TokenProvider.LogKey));
             return null;
@@ -403,18 +402,17 @@ namespace ReformaAPITesting
             //GetHouseProfileSFResponse c = client.GetHouseProfileSF("fee76045-fe22-43a4-ad58-ad99e903bd58", 1);
 
             //Установка дома в управление организации
-            /*try
+            try
             {
                 client.SetNewHouse(new FiasAddress() { city_id = "1", street_id = "1", block = "1", building = "1", house_number = "1", room_number = "1" }, 1);
             }
             catch (Exception m) 
             {
                 Console.WriteLine(m.Message);
-            }*/
+            }
             //client.SetNewHouse(new FiasAddress() { street_id = "1", city_id = "1", street_id = "1", building = "Здание", block = "Блок", house_number = "1", room_number = "101"}, );
             //client.Endpoint.Behaviors.RemoveAt(client.Endpoint.Behaviors.IndexOf(client.Endpoint.Behaviors.First(i => i.GetType() == typeof(AuthHeaderBehavior))));
-
-            APIProvider.isA = true;
+            
             try
             {
                 client.Logout();
@@ -423,8 +421,6 @@ namespace ReformaAPITesting
             {
                 Console.WriteLine(e.Message);
             }
-
-            HouseData[] data2 = client.GetHouseList("7329012644");
 
             Console.WriteLine("Finished!");
             Console.ReadLine();
