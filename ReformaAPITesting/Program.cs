@@ -341,14 +341,14 @@ namespace ReformaAPITesting
         public static string PASSWORD = "!ALEX!()$!(($!";
         public static string endpointAddress = "http://api-beta.reformagkh.ru/api_document_literal";
 
-        static void Main(string[] args)
+        /*static void Main(string[] args)
         {
-            /*APIProvider provider = new APIProvider(new ApiSoapPortClient());
+            APIProvider provider = new APIProvider(new ApiSoapPortClient());
             Test t = provider.FillTest(provider.FillAddress("1", "2", "3", "4", "5", "6"), 10.5, 20, "Hello!");
             provider.Login();
             RequestState[] states = provider.GetRequestList();
             ReportingPeriod[] periods = provider.GetReportingPeriodList();
-            provider.Logout();*/
+            provider.Logout();
 
             LoginResponse response = new LoginResponse();
             LoginRequest request = new LoginRequest(LOGIN, PASSWORD);
@@ -403,14 +403,14 @@ namespace ReformaAPITesting
             //GetHouseProfileSFResponse c = client.GetHouseProfileSF("fee76045-fe22-43a4-ad58-ad99e903bd58", 1);
 
             //Установка дома в управление организации
-            /*try
+            try
             {
                 client.SetNewHouse(new FiasAddress() { city_id = "1", street_id = "1", block = "1", building = "1", house_number = "1", room_number = "1" }, 1);
             }
             catch (Exception m) 
             {
                 Console.WriteLine(m.Message);
-            }*/
+            }
             //client.SetNewHouse(new FiasAddress() { street_id = "1", city_id = "1", street_id = "1", building = "Здание", block = "Блок", house_number = "1", room_number = "101"}, );
             //client.Endpoint.Behaviors.RemoveAt(client.Endpoint.Behaviors.IndexOf(client.Endpoint.Behaviors.First(i => i.GetType() == typeof(AuthHeaderBehavior))));
 
@@ -428,6 +428,78 @@ namespace ReformaAPITesting
 
             Console.WriteLine("Finished!");
             Console.ReadLine();
+        }*/
+
+        static void Main(string[] args)
+        {
+            //Client creation
+            ApiSoapPortClient client = new ApiSoapPortClient(new BasicHttpBinding("ApiSoapBinding"), new EndpointAddress(endpointAddress));
+            LoginResponse response = new LoginResponse();
+            //Particular token to store seesion key
+            TokenProvider token = new TokenProvider("");
+            
+            //Custom behaviour for message interception and seesion key adding
+            AuthHeaderBehavior behaviour = new AuthHeaderBehavior(token);
+            //Activate this behaviour for our client connection
+            client.Endpoint.Behaviors.Add(new AuthHeaderBehavior(token));
+
+            //1. *************** Login() *************** (+)
+            response.LoginResult = client.Login(LOGIN, PASSWORD);
+            (client.Endpoint.Behaviors.First(i => i.GetType() == typeof(AuthHeaderBehavior)) as AuthHeaderBehavior).TokenProvider.LogKey = response.LoginResult;
+            Console.WriteLine("My session key is {0}", response.LoginResult);
+            
+            //2. ***************SetRequestForSubmit() - set subscriptions for newcomers*********** (+)
+            SetRequestForSubmitInnStatus[] registrationStatus = client.SetRequestForSubmit(new string[] { "7329012644" });
+
+            //3. ***************GetRequestList() - returns a list of all requests statuses of subscribed companies   (+)
+            RequestState[] requestStates = client.GetRequestList();
+
+            //4. *************** GetReportingPeriodList() - returns a list of system report periods
+            ReportingPeriod[] periods = client.GetReportingPeriodList();
+
+            //5. *************** SetCompanyProfile() - changes company data according to current/archived organization document with corresponded INN(ITN)individual tafor set report period (-) so much stuff to load
+            try
+            {
+                client.SetCompanyProfile("7329012644", periods.Last().id, new CompanyProfileData() { });
+            }
+            catch (Exception e) 
+            {
+                Console.WriteLine("Method name is {0}, Exception type = {1}, Exception message = {2}", "SetCompanyProfile()", e.GetType(), e.Message);
+            }
+
+            //5.1 GetCompanyProfile() - no information but so it exists
+            //CompanyProfileData profileData = client.GetCompanyProfile("7329012644", 1);
+            
+
+            //6. ************** SetNewCompany() - set a bid for a new company registration (-)
+            try
+            {
+                client.SetNewCompany("123456789", new NewCompanyProfileData() { });
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Method name is {0}, Exception type = {1}, Exception message = {2}", "SetNewCompany", e.GetType(), e.Message);
+            }
+
+            //7. ************** GetHouseList() - returns houses list which are under management of organization with corresponded INN
+            HouseData[] houseData = client.GetHouseList("7329012644");
+
+            
+            // ************** SetFileToCompanyProfile() - sets a new file in organization document for a corresponded report period
+            client.SetFileToCompanyProfile(periods.Last().id, "7329012644", 1, new FileObject() { data = "Some test data to upload", name = "testFile" }); 
+
+
+            //   *************** Logout() ***************
+            try
+            {
+                client.Logout();
+            }
+            catch(Exception e) 
+            {
+                Console.WriteLine("Exception type = {0}, Exception message = {1}", e.GetType() , e.Message);
+            }
+
+            Console.ReadKey();
         }
     }
 }
