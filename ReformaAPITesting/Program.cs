@@ -8,10 +8,11 @@ using System.ServiceModel.Channels;
 using System.ServiceModel.Description;
 using System.ServiceModel.Dispatcher;
 using System.ServiceModel.Configuration;
+using System.IO;
 
 namespace ReformaAPITesting
 {
-    public class Test 
+    public class Test
     {
         public int IntVal { get; set; }
         public string StringVal { get; set; }
@@ -94,8 +95,8 @@ namespace ReformaAPITesting
                                                                                int? serviced_by_owner_uo,
                                                                                int? serviced_by_tsg,
                                                                                int? serviced_by_tsg_uo
-                                                                              ) 
-        {   
+                                                                              )
+        {
             return new CountHousesUnderMngReportDate()
             {
                 count_houses_under_mng_report_date = count_houses_under_mng_report_date,
@@ -150,7 +151,7 @@ namespace ReformaAPITesting
         {
             return client.GetReportingPeriodList();
         }
-       
+
 
         #endregion
 
@@ -185,7 +186,7 @@ namespace ReformaAPITesting
                                                     int staffRegularEngineers, int staffRegularLabour, CountDismissed countDismissed,
                                                     int? accidentsCount, int? prosecuteCount, string prosecuteDocumentsCount, string tsgManagementManagers,
                                                     string auditCommisionMembers, string additionalInfoFreeForm, int residentsCount,
-                                                    CountHousesUnderMngReportDate housesUnderMngReportDateCount, 
+                                                    CountHousesUnderMngReportDate housesUnderMngReportDateCount,
                                                     string workTime = ""
                                                     )
         {
@@ -232,36 +233,36 @@ namespace ReformaAPITesting
             };
         }
 
-        public Test FillTest(FiasAddress AddressVal, double DoubleVal, int IntVal, string StringVal) 
+        public Test FillTest(FiasAddress AddressVal, double DoubleVal, int IntVal, string StringVal)
         {
             var hack = new { AddressVal, DoubleVal, IntVal, StringVal };
             var parameters = MethodBase.GetCurrentMethod().GetParameters();
             Test test = new Test();
-            
-            foreach (var item in test.GetType().GetProperties()) 
+
+            foreach (var item in test.GetType().GetProperties())
             {
-                
+
             }
 
             //filling dictionary
-            foreach(var item in test.GetType().GetProperties()) 
+            foreach (var item in test.GetType().GetProperties())
             {
-                valuesDictionary.Add(item.Name, new KeyValuePair<Type,object>(hack.GetType().GetProperties().First(i => i.Name == item.Name).PropertyType, 
+                valuesDictionary.Add(item.Name, new KeyValuePair<Type, object>(hack.GetType().GetProperties().First(i => i.Name == item.Name).PropertyType,
                                                                               hack.GetType().GetProperties().First(i => i.Name == item.Name).GetValue(hack, null)));
             }
 
 
-            foreach (var item in valuesDictionary) 
+            foreach (var item in valuesDictionary)
             {
                 Console.WriteLine("{0} = {1} *** {2}", item.Key, item.Value.Key.Name, item.Value.Value);
             }
-            
+
             return new Test()
             {
-                
+
                 AddressVal = AddressVal,
                 DoubleVal = DoubleVal,
-                IntVal = IntVal, 
+                IntVal = IntVal,
                 StringVal = StringVal
             };
         }
@@ -340,6 +341,10 @@ namespace ReformaAPITesting
         public static string LOGIN = "a.zhelepov";
         public static string PASSWORD = "!ALEX!()$!(($!";
         public static string endpointAddress = "http://api-beta.reformagkh.ru/api_document_literal";
+        public static string testInn = "7329012644";
+        public static string registrationInn = "3304005479"; //INN (ITN) - specially created for new management company registration //ТСЖ "Текстильщик" с Владимира "3304005479"
+        public static int houseTestId = 7497097;
+        public static int houseTestId2 = 8928081; 
 
         /*static void Main(string[] args)
         {
@@ -430,6 +435,19 @@ namespace ReformaAPITesting
             Console.ReadLine();
         }*/
 
+        public static void PrintHousesList(string inn, HouseData[] housesData)
+        {
+            Console.WriteLine("******************House list for organization {0}***********************", inn);
+            for (int i = 0; i < housesData.Count(); i++)
+            {
+                if (housesData[i].house_id.Equals(7497097))
+                    throw new Exception();
+                Console.WriteLine("{0}. - ", i);
+                Console.WriteLine("HouseId = {0} |||, CityId = {1}, StreetId = {2} HouseNumber = {3}, Block = {4}, Building = {5}, Room = {6}", housesData[i].house_id, housesData[i].full_address.city1_guid, housesData[i].full_address.street_guid, housesData[i].full_address.house_number, housesData[i].full_address.block, housesData[i].full_address.building, "-");
+            }
+            Console.WriteLine("===========================================================");
+        }
+
         static void Main(string[] args)
         {
             //Client creation
@@ -437,19 +455,18 @@ namespace ReformaAPITesting
             LoginResponse response = new LoginResponse();
             //Particular token to store seesion key
             TokenProvider token = new TokenProvider("");
-            
+
             //Custom behaviour for message interception and seesion key adding
             AuthHeaderBehavior behaviour = new AuthHeaderBehavior(token);
             //Activate this behaviour for our client connection
             client.Endpoint.Behaviors.Add(new AuthHeaderBehavior(token));
-
             //1. *************** Login() *************** (+)
             response.LoginResult = client.Login(LOGIN, PASSWORD);
             (client.Endpoint.Behaviors.First(i => i.GetType() == typeof(AuthHeaderBehavior)) as AuthHeaderBehavior).TokenProvider.LogKey = response.LoginResult;
             Console.WriteLine("My session key is {0}", response.LoginResult);
-            
+
             //2. ***************SetRequestForSubmit() - set subscriptions for newcomers*********** (+)
-            SetRequestForSubmitInnStatus[] registrationStatus = client.SetRequestForSubmit(new string[] { "7329012644" });
+            SetRequestForSubmitInnStatus[] registrationStatus = client.SetRequestForSubmit(new string[] { testInn });
 
             //3. ***************GetRequestList() - returns a list of all requests statuses of subscribed companies   (+)
             RequestState[] requestStates = client.GetRequestList();
@@ -460,33 +477,121 @@ namespace ReformaAPITesting
             //5. *************** SetCompanyProfile() - changes company data according to current/archived organization document with corresponded INN(ITN)individual tafor set report period (-) so much stuff to load
             try
             {
-                client.SetCompanyProfile("7329012644", periods.Last().id, new CompanyProfileData() { });
+                client.SetCompanyProfile(testInn, periods.Last().id, new CompanyProfileData() { });
             }
-            catch (Exception e) 
+            catch (Exception e)
             {
                 Console.WriteLine("Method name is {0}, Exception type = {1}, Exception message = {2}", "SetCompanyProfile()", e.GetType(), e.Message);
             }
 
             //5.1 GetCompanyProfile() - no information but so it exists
-            //CompanyProfileData profileData = client.GetCompanyProfile("7329012644", 1);
-            
+            //CompanyProfileData profileData = client.GetCompanyProfile("7329012644", client.GetReportingPeriodList().First().id);
+            //profileData = client.GetCompanyProfile(registrationInn, client.GetReportingPeriodList().First().id);
 
             //6. ************** SetNewCompany() - set a bid for a new company registration (-)
             try
             {
-                client.SetNewCompany("123456789", new NewCompanyProfileData() { });
+                client.SetNewCompany(registrationInn, new NewCompanyProfileData()
+                {
+                    firstname = "Иван",
+                    surname = "Иванов",
+                    middlename = "Иванович",
+                    name_full = "Текстильщик ТСЖ",
+                    name_short = "Текстильщик",
+                    okopf = 46, //ТСЖ
+                    position = "заместитель",
+                    ogrn = "1033300201483",
+                    date_assignment_ogrn = DateTime.Now.AddYears(-4),
+                    name_authority_assigning_ogrn = "лицо власти",
+                    actual_address = new FiasAddress()
+                    {
+                        city_id = "aa4aa0d7-f97f-4974-9291-c0a530a1ccb6", //Гусь-хрустальный
+                        street_id = "81bfaf83-c26a-47cf-ae02-85eb193c4b6e", //Калинина
+                        house_number = "50",
+                        block = String.Empty,
+                        building = String.Empty,
+                        room_number = String.Empty,
+                    },
+                    legal_address = new FiasAddress()
+                    {
+                        city_id = "aa4aa0d7-f97f-4974-9291-c0a530a1ccb6", //Гусь-хрустальный
+                        street_id = "81bfaf83-c26a-47cf-ae02-85eb193c4b6e", //Калинина
+                        house_number = "50",
+                        block = String.Empty,
+                        building = String.Empty,
+                        room_number = String.Empty,
+                    },
+                    post_address = new FiasAddress() 
+                    {
+                        city_id = "aa4aa0d7-f97f-4974-9291-c0a530a1ccb6", //Гусь-хрустальный
+                        street_id = "81bfaf83-c26a-47cf-ae02-85eb193c4b6e", //Калинина
+                        house_number = "50",
+                        block = String.Empty,
+                        building = String.Empty,
+                        room_number = String.Empty,
+                    },
+                    phone = "777888",
+                    email = "emailaddress@mail.ru",
+                    site = "www.nowebsite.ru",
+                    proportion_mo = 0.0f,
+                    proportion_sf = 0.0f
+                });
             }
             catch (Exception e)
             {
                 Console.WriteLine("Method name is {0}, Exception type = {1}, Exception message = {2}", "SetNewCompany", e.GetType(), e.Message);
             }
 
+            //Односторонняя операция вернула ненулевое сообщение с Action=
             //7. ************** GetHouseList() - returns houses list which are under management of organization with corresponded INN
-            HouseData[] houseData = client.GetHouseList("7329012644");
+            HouseData[] housesData = client.GetHouseList(testInn);
+            PrintHousesList(testInn, housesData);
 
-            
+            //Create new FiasAddres for further magic
+            int houseId = housesData.First().house_id;
+            FiasAddress address = new FiasAddress()
+            {
+                city_id = housesData.First().full_address.city1_guid,
+                street_id = housesData.First().full_address.street_guid,
+                house_number = housesData.First().full_address.house_number,
+                block = housesData.First().full_address.block,
+                building = housesData.First().full_address.building,
+                room_number = ""
+            };
+
+            //8. ************** SetUnlinkFromOrganization / SetHouseLinkToOrganization - resets and sets house under organization management 
+            try
+            {
+                client.SetUnlinkFromOrganization(houseId, DateTime.Now, 1, "Just a test reason");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Exception type = {0}, Exception message = {1}", e.GetType(), e.Message);
+            }
+            housesData = client.GetHouseList(testInn);
+            PrintHousesList(testInn, housesData);
+
+            try
+            {
+                client.SetHouseLinkToOrganization(houseId, testInn, DateTime.Now, DateTime.Now.AddSeconds(5));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Exception type = {0}, Exception message = {1}", e.GetType(), e.Message);
+            }
+            housesData = client.GetHouseList(testInn);
+            PrintHousesList(testInn, housesData);
+
+            //9. ************** SetFileToHouseProfile
+            FileStream fs = new FileStream("test.pdf", FileMode.Open, FileAccess.Read);
+            byte[] fileBytes = new byte[fs.Length];
+            fs.Read(fileBytes, 0, Convert.ToInt32(fs.Length));
+            string encodedData = Convert.ToBase64String(fileBytes, Base64FormattingOptions.InsertLineBreaks);
+            GetHouseProfileResponse resp = client.GetHouseProfile(houseTestId2);
+            client.SetFileToHouseProfile(houseTestId2, 1, new FileObject() { name = "testFile", data = encodedData });
+
             // ************** SetFileToCompanyProfile() - sets a new file in organization document for a corresponded report period
-            client.SetFileToCompanyProfile(periods.Last().id, "7329012644", 1, new FileObject() { data = "Some test data to upload", name = "testFile" }); 
+            //client.SetFileToCompanyProfile(periods.Last().id, "7329012644", 1, new FileObject() { data = "Some test data to upload", name = "testFile" }); 
 
 
             //   *************** Logout() ***************
@@ -494,9 +599,9 @@ namespace ReformaAPITesting
             {
                 client.Logout();
             }
-            catch(Exception e) 
+            catch (Exception e)
             {
-                Console.WriteLine("Exception type = {0}, Exception message = {1}", e.GetType() , e.Message);
+                Console.WriteLine("Exception type = {0}, Exception message = {1}", e.GetType(), e.Message);
             }
 
             Console.ReadKey();
