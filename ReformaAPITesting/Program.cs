@@ -354,86 +354,10 @@ namespace ReformaAPITesting
             RequestState[] states = provider.GetRequestList();
             ReportingPeriod[] periods = provider.GetReportingPeriodList();
             provider.Logout();
+        */
 
-            LoginResponse response = new LoginResponse();
-            LoginRequest request = new LoginRequest(LOGIN, PASSWORD);
-            SetRequestForSubmitInnStatus[] statuses;
-            FiasAddress address = new ReformaAPI.FiasAddress();
-            ApiSoapPortClient client = new ApiSoapPortClient(new BasicHttpBinding("ApiSoapBinding"), new EndpointAddress(endpointAddress));
-            TokenProvider token = new TokenProvider("");
-            AuthHeaderBehavior behaviour = new AuthHeaderBehavior(token);
-            client.Endpoint.Behaviors.Add(new AuthHeaderBehavior(token));
-            
-            try
-            {
-                Console.WriteLine("Before connection status: " + client.State.ToString());
-                response.LoginResult = client.Login(LOGIN, PASSWORD);
-                (client.Endpoint.Behaviors[2] as AuthHeaderBehavior).TokenProvider.LogKey = response.LoginResult;
-                Console.WriteLine("After connection status: " + client.State.ToString());
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Error 1");
-                Console.WriteLine(e.Message);
-            }
-
-            try
-            {
-                statuses = client.SetRequestForSubmit(new string[] { "7329012644" });
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Error 2");
-                Console.WriteLine(e.Message);
-            }
-
-            //Дома в управлении
-            HouseData[] data = client.GetHouseList("7329012644");
-            data = data.OrderBy(i => i.full_address.street_formal_name).ToArray();
-            Console.WriteLine("Дома в управлении, количество - " + data.Count());
-            foreach (var item in data) 
-            {
-                Console.WriteLine("=========================================================");
-                Console.WriteLine("RegionName = {0}, CityName = {1}, StreetFormalName = {2}, HouseNumber = {3}", item.full_address.region_formal_name, item.full_address.city1_formal_name, item.full_address.street_formal_name, item.full_address.house_number);
-                Console.WriteLine("RegionId = {0}, CityId = {1}, StreetId = {2}, HouseId = {3}", item.full_address.region_guid, item.full_address.city1_guid, item.full_address.street_guid, item.house_id);
-                Console.WriteLine("=========================================================");
-            }
-
-            //Получение данных по интересующему дому
-            HouseInfo[] info = client.GetHouseInfo(new FiasAddress() { city_id = "73b29372-242c-42c5-89cd-8814bc2368af", street_id = "312c73ca-652a-4a7d-b95e-783e9d99ea10", house_number = "9" });
-            //client.SetUnlinkFromOrganization(8920471, DateTime.Now, 1, "Тестовая причина");
-            GetHouseProfileResponse re = client.GetHouseProfile(8920471);
-
-            //client.
-            //GetHouseProfileSFResponse c = client.GetHouseProfileSF("fee76045-fe22-43a4-ad58-ad99e903bd58", 1);
-
-            //Установка дома в управление организации
-            try
-            {
-                client.SetNewHouse(new FiasAddress() { city_id = "1", street_id = "1", block = "1", building = "1", house_number = "1", room_number = "1" }, 1);
-            }
-            catch (Exception m) 
-            {
-                Console.WriteLine(m.Message);
-            }
-            //client.SetNewHouse(new FiasAddress() { street_id = "1", city_id = "1", street_id = "1", building = "Здание", block = "Блок", house_number = "1", room_number = "101"}, );
-            //client.Endpoint.Behaviors.RemoveAt(client.Endpoint.Behaviors.IndexOf(client.Endpoint.Behaviors.First(i => i.GetType() == typeof(AuthHeaderBehavior))));
-
-            APIProvider.isA = true;
-            try
-            {
-                client.Logout();
-            }
-            catch (ProtocolException e)
-            {
-                Console.WriteLine(e.Message);
-            }
-
-            HouseData[] data2 = client.GetHouseList("7329012644");
-
-            Console.WriteLine("Finished!");
-            Console.ReadLine();
-        }*/
+        //Вопросы
+        //1. Missing Okopf SetCompanyProfile() - с какого фига, если установил 
 
         public static void PrintHousesList(string inn, HouseData[] housesData)
         {
@@ -477,16 +401,115 @@ namespace ReformaAPITesting
             //5. *************** SetCompanyProfile() - changes company data according to current/archived organization document with corresponded INN(ITN)individual tafor set report period (-) so much stuff to load
             try
             {
-                client.SetCompanyProfile(testInn, periods.Last().id, new CompanyProfileData() { });
+                client.SetCompanyProfile(testInn, client.GetReportingPeriodList().Last().id, new CompanyProfileData()
+                {
+                    name_full = "Новое время",
+                    name_short = "Новое время",
+                    okopf = 28016,
+                    surname = "Мышляев",
+                    firstname = "Игорь",
+                    middlename = "Александрович",
+                    position = "Директор",
+                    ogrn = "",
+                    date_assignment_ogrn = DateTime.Now.AddYears(-3),
+                    name_authority_assigning_ogrn = "Должностное лицо",
+                    legal_address = new FiasAddress()
+                    {
+                        city_id = "73b29372-242c-42c5-89cd-8814bc2368af",
+                        street_id = "e6087222-376a-43f6-8f0d-44bc9963daa3",
+                        house_number = "110"
+                    },
+                    actual_address = new FiasAddress()
+                    {
+                        city_id = "73b29372-242c-42c5-89cd-8814bc2368af",
+                        street_id = "e6087222-376a-43f6-8f0d-44bc9963daa3",
+                        house_number = "110"
+                    },
+                    post_address = new FiasAddress()
+                    {
+                        city_id = "73b29372-242c-42c5-89cd-8814bc2368af",
+                        street_id = "e6087222-376a-43f6-8f0d-44bc9963daa3",
+                        house_number = "110"
+                    },
+                    work_time = "9:00 - 21:00",
+                    phone = "2233322",
+                    email = "organization_email",
+                    site = "nowebsite.ru",
+                    proportion_sf = 20.32f,
+                    proportion_mo = 20.65f,
+                    additional_info_freeform = "it is an additional information",
+                    participation_in_associations = "we're really communicative and participate in everything",
+                    srf_count = 1,
+                    mo_count = 2,
+                    offices_count = 2,
+                    staff_regular_total = 100,
+                    staff_regular_administrative = 10,
+                    staff_regular_engineers = 60,
+                    staff_regular_labor = 30,
+                    count_dismissed = new CountDismissed()
+                    {
+                        count_dismissed = 10,
+                        count_dismissed_admins = 1,
+                        count_dismissed_engineers = 1,
+                        count_dismissed_workers = 8
+                    },
+                    accidents_count = 6,
+                    prosecute_count = 3,
+                    prosecute_copies_of_documents = "some prosecute documents copies",
+                    tsg_management_members = "management members",
+                    audit_commision_members = "audit members",
+                    residents_count = 3,
+                    count_houses_under_mng_report_date = new CountHousesUnderMngReportDate()
+                    {
+                        count_houses_under_mng_report_date = 30,
+                        serviced_by_competition = 5,
+                        serviced_by_owner_uo = 5,
+                        serviced_by_tsg = 10,
+                        serviced_by_tsg_uo = 10
+                    },
+                    count_houses_under_mng_start_period = new CountHousesUnderMngStartPeriod()
+                    {
+                        count_houses_under_mng_start_period = 300,
+                        serviced_by_competition = 50,
+                        serviced_by_owner_uo = 50,
+                        serviced_by_tsg = 100,
+                        serviced_by_tsg_uo = 100
+                    },
+                    avg_time_service_mkd = new AvgTimeServiceMkd()
+                    {
+                        avg_time_service_mkd = 10000f,
+                        by_houses_25 = 1000f,
+                        by_houses_26_50 = 1000f,
+                        by_houses_51_75 = 5000f,
+                        by_houses_76 = 2000f,
+                        by_houses_alarm = 1000f
+                    },
+                    income_of_mng = new IncomeOfMng()
+                    {
+                        by_houses_25 = 1000f,
+                        by_houses_26_50 = 2000f,
+                        by_houses_51_75 = 3000f,
+                        by_houses_76 = 400f,
+                        by_houses_alarm = 5000f,
+                        income_of_mng = 10000f
+                    },
+                    net_assets = 10000000f,
+                    annual_financial_statements = "Precisely estimated",
+                    revenues_expenditures_estimates = "Estimations"
+                    //I'm fucked by amounts
+                });
             }
             catch (Exception e)
             {
-                Console.WriteLine("Method name is {0}, Exception type = {1}, Exception message = {2}", "SetCompanyProfile()", e.GetType(), e.Message);
+                Console.WriteLine("Method name is {0}, Exception type = {1}, Exception message = {2}", "SetNewCompany", e.GetType(), e.Message);
             }
 
-            //5.1 GetCompanyProfile() - no information but so it exists
-            //CompanyProfileData profileData = client.GetCompanyProfile("7329012644", client.GetReportingPeriodList().First().id);
-            //profileData = client.GetCompanyProfile(registrationInn, client.GetReportingPeriodList().First().id);
+            //5.1 *********************** GetCompanyProfileData()
+            try
+            {
+                CompanyProfileData data = client.GetCompanyProfile(testInn, client.GetReportingPeriodList().Last().id);
+            }
+            catch(Exception e) { }
 
             //6. ************** SetNewCompany() - set a bid for a new company registration (-)
             try
@@ -498,7 +521,7 @@ namespace ReformaAPITesting
                     middlename = "Иванович",
                     name_full = "Текстильщик ТСЖ",
                     name_short = "Текстильщик",
-                    okopf = 46, //ТСЖ
+                    okopf = 28016,
                     position = "заместитель",
                     ogrn = "1033300201483",
                     date_assignment_ogrn = DateTime.Now.AddYears(-4),
@@ -542,6 +565,9 @@ namespace ReformaAPITesting
                 Console.WriteLine("Method name is {0}, Exception type = {1}, Exception message = {2}", "SetNewCompany", e.GetType(), e.Message);
             }
 
+            //6.1 *************** SetCompanyProfile()
+            
+
             //Односторонняя операция вернула ненулевое сообщение с Action=
             //7. ************** GetHouseList() - returns houses list which are under management of organization with corresponded INN
             HouseData[] housesData = client.GetHouseList(testInn);
@@ -583,12 +609,12 @@ namespace ReformaAPITesting
             PrintHousesList(testInn, housesData);
 
             //9. ************** SetFileToHouseProfile
-            FileStream fs = new FileStream("test.pdf", FileMode.Open, FileAccess.Read);
+            FileStream fs = new FileStream("test.txt", FileMode.Open, FileAccess.Read);
             byte[] fileBytes = new byte[fs.Length];
             fs.Read(fileBytes, 0, Convert.ToInt32(fs.Length));
             string encodedData = Convert.ToBase64String(fileBytes, Base64FormattingOptions.InsertLineBreaks);
             GetHouseProfileResponse resp = client.GetHouseProfile(houseTestId2);
-            client.SetFileToHouseProfile(houseTestId2, 1, new FileObject() { name = "testFile", data = encodedData });
+            client.SetFileToHouseProfile(houseTestId2, 21, new FileObject() { name = "testFile", data = encodedData });
 
             // ************** SetFileToCompanyProfile() - sets a new file in organization document for a corresponded report period
             //client.SetFileToCompanyProfile(periods.Last().id, "7329012644", 1, new FileObject() { data = "Some test data to upload", name = "testFile" }); 
