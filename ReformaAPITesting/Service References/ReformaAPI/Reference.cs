@@ -657,7 +657,7 @@ namespace ReformaAPITesting.ReformaAPI {
         
         private string name_shortField;
         
-        private int okopfField;
+        private Okopf okopfField;
         
         private string firstnameField;
         
@@ -669,7 +669,7 @@ namespace ReformaAPITesting.ReformaAPI {
         
         private string ogrnField;
         
-        private System.DateTime date_assignment_ogrnField;
+        private System.Nullable<System.DateTime> date_assignment_ogrnField;
         
         private string name_authority_assigning_ogrnField;
         
@@ -1327,7 +1327,7 @@ namespace ReformaAPITesting.ReformaAPI {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
-        public int okopf {
+        public Okopf okopf {
             get {
                 return this.okopfField;
             }
@@ -1386,7 +1386,7 @@ namespace ReformaAPITesting.ReformaAPI {
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable=true)]
         public string ogrn {
             get {
                 return this.ogrnField;
@@ -1398,8 +1398,8 @@ namespace ReformaAPITesting.ReformaAPI {
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified, DataType="date")]
-        public System.DateTime date_assignment_ogrn {
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified, DataType="date", IsNullable=true)]
+        public System.Nullable<System.DateTime> date_assignment_ogrn {
             get {
                 return this.date_assignment_ogrnField;
             }
@@ -1410,7 +1410,7 @@ namespace ReformaAPITesting.ReformaAPI {
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable=true)]
         public string name_authority_assigning_ogrn {
             get {
                 return this.name_authority_assigning_ogrnField;
@@ -3732,6 +3732,257 @@ namespace ReformaAPITesting.ReformaAPI {
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.34230")]
     [System.SerializableAttribute()]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://api-beta.reformagkh.ru/api_document_literal")]
+    public enum Okopf {
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("1 10 00")]
+        Item11000,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("1 10 51")]
+        Item11051,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("1 10 64")]
+        Item11064,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("1 20 00")]
+        Item12000,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("1 21 00")]
+        Item12100,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("1 21 65")]
+        Item12165,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("1 21 66")]
+        Item12166,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("1 22 00")]
+        Item12200,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("1 22 47")]
+        Item12247,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("1 22 67")]
+        Item12267,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("1 30 00")]
+        Item13000,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("1 40 00")]
+        Item14000,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("1 41 00")]
+        Item14100,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("1 42 00")]
+        Item14200,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("1 50 00")]
+        Item15000,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("1 51 00")]
+        Item15100,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("1 51 41")]
+        Item15141,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("1 51 43")]
+        Item15143,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("1 52 00")]
+        Item15200,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("1 52 41")]
+        Item15241,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("1 52 42")]
+        Item15242,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("1 52 43")]
+        Item15243,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("1 53 00")]
+        Item15300,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("1 90 00")]
+        Item19000,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("2 01 00")]
+        Item20100,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("2 01 02")]
+        Item20102,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("2 01 03")]
+        Item20103,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("2 01 04")]
+        Item20104,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("2 01 07")]
+        Item20107,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("2 02 00")]
+        Item20200,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("2 02 10")]
+        Item20210,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("2 02 11")]
+        Item20211,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("2 04 00")]
+        Item20400,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("2 05 00")]
+        Item20500,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("2 06 00")]
+        Item20600,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("2 06 01")]
+        Item20601,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("2 06 03")]
+        Item20603,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("2 06 05")]
+        Item20605,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("2 06 08")]
+        Item20608,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("2 09 00")]
+        Item20900,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("2 09 01")]
+        Item20901,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("2 09 03")]
+        Item20903,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("2 09 04")]
+        Item20904,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("2 09 05")]
+        Item20905,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("2 09 06")]
+        Item20906,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("2 10 01")]
+        Item21001,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("2 80 00")]
+        Item28000,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("2 80 01")]
+        Item28001,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("2 80 04")]
+        Item28004,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("2 80 05")]
+        Item28005,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("2 80 13")]
+        Item28013,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("2 80 15")]
+        Item28015,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("2 80 16")]
+        Item28016,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("2 80 17")]
+        Item28017,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("2 90 00")]
+        Item29000,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("3 00 01")]
+        Item30001,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("3 00 02")]
+        Item30002,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("3 00 03")]
+        Item30003,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("3 00 04")]
+        Item30004,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("3 00 06")]
+        Item30006,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("5 01 02")]
+        Item50102,
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.34230")]
+    [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://api-beta.reformagkh.ru/api_document_literal")]
@@ -3843,7 +4094,7 @@ namespace ReformaAPITesting.ReformaAPI {
         
         private string name_shortField;
         
-        private int okopfField;
+        private Okopf okopfField;
         
         private string firstnameField;
         
@@ -3855,7 +4106,7 @@ namespace ReformaAPITesting.ReformaAPI {
         
         private string ogrnField;
         
-        private System.DateTime date_assignment_ogrnField;
+        private System.Nullable<System.DateTime> date_assignment_ogrnField;
         
         private string name_authority_assigning_ogrnField;
         
@@ -3901,7 +4152,7 @@ namespace ReformaAPITesting.ReformaAPI {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
-        public int okopf {
+        public Okopf okopf {
             get {
                 return this.okopfField;
             }
@@ -3960,7 +4211,7 @@ namespace ReformaAPITesting.ReformaAPI {
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable=true)]
         public string ogrn {
             get {
                 return this.ogrnField;
@@ -3972,8 +4223,8 @@ namespace ReformaAPITesting.ReformaAPI {
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified, DataType="date")]
-        public System.DateTime date_assignment_ogrn {
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified, DataType="date", IsNullable=true)]
+        public System.Nullable<System.DateTime> date_assignment_ogrn {
             get {
                 return this.date_assignment_ogrnField;
             }
@@ -3984,7 +4235,7 @@ namespace ReformaAPITesting.ReformaAPI {
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        [System.Xml.Serialization.XmlElementAttribute(Form=System.Xml.Schema.XmlSchemaForm.Unqualified, IsNullable=true)]
         public string name_authority_assigning_ogrn {
             get {
                 return this.name_authority_assigning_ogrnField;

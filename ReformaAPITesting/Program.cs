@@ -9,6 +9,8 @@ using System.ServiceModel.Description;
 using System.ServiceModel.Dispatcher;
 using System.ServiceModel.Configuration;
 using System.IO;
+using System.Xml;
+using System.Text;
 
 namespace ReformaAPITesting
 {
@@ -176,7 +178,7 @@ namespace ReformaAPITesting
         /// Метод изменяет данные по текущей/архивной анкете управляющей организации с соответствующим ИНН за указанный отчетный период. Внешняя система может обновлять анкеты только тех организаций, по которым разрешена подписка.
         /// </summary>
         /// <returns></returns>
-        public CompanyProfileData SetCompanyProfile(string fullName, string shortName, int okopf, string surname,
+        public CompanyProfileData SetCompanyProfile(string fullName, string shortName, Okopf okopf, string surname,
                                                     string middleName, string firstName, string position, string ogrn,
                                                     DateTime assignmentOgrnDate, string authorityNameAssigningOgrn,
                                                     FiasAddress legalAddress, FiasAddress actualAddress, FiasAddress postAddress,
@@ -281,6 +283,325 @@ namespace ReformaAPITesting
         }
     }
 
+    #region Attempt to solve exception problem
+    public class CustomTextMessageEncoder : MessageEncoder
+    {
+        private CustomTextMessageEncoderFactory factory;
+        private XmlWriterSettings writerSettings;
+        private string contentType;
+
+        public CustomTextMessageEncoder(CustomTextMessageEncoderFactory factory)
+        {
+            this.factory = factory;
+
+            this.writerSettings = new XmlWriterSettings();
+            this.writerSettings.Encoding = Encoding.GetEncoding(factory.CharSet);
+            this.contentType = string.Format("{0}; charset={1}",
+                this.factory.MediaType, this.writerSettings.Encoding.HeaderName);
+        }
+
+        public override string ContentType
+        {
+            get
+            {
+                return this.contentType;
+            }
+        }
+
+        public override string MediaType
+        {
+            get
+            {
+                return factory.MediaType;
+            }
+        }
+
+        public override MessageVersion MessageVersion
+        {
+            get
+            {
+                return this.factory.MessageVersion;
+            }
+        }
+
+        public override Message ReadMessage(ArraySegment<byte> buffer, BufferManager bufferManager, string contentType)
+        {
+            byte[] msgContents = new byte[buffer.Count];
+            Array.Copy(buffer.Array, buffer.Offset, msgContents, 0, msgContents.Length);
+            bufferManager.ReturnBuffer(buffer.Array);
+
+            MemoryStream stream = new MemoryStream(msgContents);
+            Message mess = ReadMessage(stream, int.MaxValue); 
+            return mess;
+        }
+
+        public override Message ReadMessage(Stream stream, int maxSizeOfHeaders, string contentType)
+        {
+            XmlReader reader = XmlReader.Create(stream);
+            return Message.CreateMessage(reader, maxSizeOfHeaders, this.MessageVersion);
+        }
+
+        public override ArraySegment<byte> WriteMessage(Message message, int maxMessageSize, BufferManager bufferManager, int messageOffset)
+        {
+            MemoryStream stream = new MemoryStream();
+            XmlWriter writer = XmlWriter.Create(stream, this.writerSettings);
+            message.WriteMessage(writer);
+            writer.Close();
+
+            byte[] messageBytes = stream.GetBuffer();
+            int messageLength = (int)stream.Position;
+            stream.Close();
+
+            int totalLength = messageLength + messageOffset;
+            byte[] totalBytes = bufferManager.TakeBuffer(totalLength);
+            Array.Copy(messageBytes, 0, totalBytes, messageOffset, messageLength);
+
+            ArraySegment<byte> byteArray = new ArraySegment<byte>(totalBytes, messageOffset, messageLength);
+            return byteArray;
+        }
+
+        public override void WriteMessage(Message message, Stream stream)
+        {
+            XmlWriter writer = XmlWriter.Create(stream, this.writerSettings);
+            message.WriteMessage(writer);
+            writer.Close();
+        }
+    }
+    public class CustomTextMessageEncoderFactory : MessageEncoderFactory
+    {
+        private MessageEncoder encoder;
+        private MessageVersion version;
+        private string mediaType;
+        private string charSet;
+
+        internal CustomTextMessageEncoderFactory(string mediaType, string charSet,
+            MessageVersion version)
+        {
+            this.version = version;
+            this.mediaType = mediaType;
+            this.charSet = charSet;
+            this.encoder = new CustomTextMessageEncoder(this);
+        }
+
+        public override MessageEncoder Encoder
+        {
+            get
+            {
+                return this.encoder;
+            }
+        }
+
+        public override MessageVersion MessageVersion
+        {
+            get
+            {
+                return this.version;
+            }
+        }
+
+        internal string MediaType
+        {
+            get
+            {
+                return this.mediaType;
+            }
+        }
+
+        internal string CharSet
+        {
+            get
+            {
+                return this.charSet;
+            }
+        }
+    }
+    
+    public class CustomTextMessageBindingElement : MessageEncodingBindingElement, IWsdlExportExtension
+    {
+        private MessageVersion msgVersion;
+        private string mediaType;
+        private string encoding;
+        private XmlDictionaryReaderQuotas readerQuotas;
+
+        CustomTextMessageBindingElement(CustomTextMessageBindingElement binding)
+            : this(binding.Encoding, binding.MediaType, binding.MessageVersion)
+        {
+            this.readerQuotas = new XmlDictionaryReaderQuotas();
+            binding.ReaderQuotas.CopyTo(this.readerQuotas);
+        }
+
+        public CustomTextMessageBindingElement(string encoding, string mediaType,
+            MessageVersion msgVersion)
+        {
+            if (encoding == null)
+                throw new ArgumentNullException("encoding");
+
+            if (mediaType == null)
+                throw new ArgumentNullException("mediaType");
+
+            if (msgVersion == null)
+                throw new ArgumentNullException("msgVersion");
+
+            this.msgVersion = msgVersion;
+            this.mediaType = mediaType;
+            this.encoding = encoding;
+            this.readerQuotas = new XmlDictionaryReaderQuotas();
+        }
+
+        public CustomTextMessageBindingElement(string encoding, string mediaType)
+            : this(encoding, mediaType, MessageVersion.Soap11WSAddressing10)
+        {
+        }
+
+        public CustomTextMessageBindingElement(string encoding)
+            : this(encoding, "text/xml")
+        {
+
+        }
+
+        public CustomTextMessageBindingElement()
+            : this("UTF-8")
+        {
+        }
+
+        public override MessageVersion MessageVersion
+        {
+            get
+            {
+                return this.msgVersion;
+            }
+
+            set
+            {
+                if (value == null)
+                    throw new ArgumentNullException("value");
+                this.msgVersion = value;
+            }
+        }
+
+
+        public string MediaType
+        {
+            get
+            {
+                return this.mediaType;
+            }
+
+            set
+            {
+                if (value == null)
+                    throw new ArgumentNullException("value");
+                this.mediaType = value;
+            }
+        }
+
+        public string Encoding
+        {
+            get
+            {
+                return this.encoding;
+            }
+
+            set
+            {
+                if (value == null)
+                    throw new ArgumentNullException("value");
+                this.encoding = value;
+            }
+        }
+
+        // This encoder does not enforces any quotas for the unsecure messages. The  
+        // quotas are enforced for the secure portions of messages when this encoder 
+        // is used in a binding that is configured with security.  
+        public XmlDictionaryReaderQuotas ReaderQuotas
+        {
+            get
+            {
+                return this.readerQuotas;
+            }
+        }
+
+        #region IMessageEncodingBindingElement Members
+        public override MessageEncoderFactory CreateMessageEncoderFactory()
+        {
+            return new CustomTextMessageEncoderFactory(this.MediaType,
+                this.Encoding, this.MessageVersion);
+        }
+
+        #endregion
+
+
+        public override BindingElement Clone()
+        {
+            return new CustomTextMessageBindingElement(this);
+        }
+
+        public override IChannelFactory<TChannel> BuildChannelFactory<TChannel>(BindingContext context)
+        {
+            if (context == null)
+                throw new ArgumentNullException("context");
+
+            context.BindingParameters.Add(this);
+            return context.BuildInnerChannelFactory<TChannel>();
+        }
+
+        public override bool CanBuildChannelFactory<TChannel>(BindingContext context)
+        {
+            if (context == null)
+                throw new ArgumentNullException("context");
+
+            return context.CanBuildInnerChannelFactory<TChannel>();
+        }
+
+        public override IChannelListener<TChannel> BuildChannelListener<TChannel>(BindingContext context)
+        {
+            if (context == null)
+                throw new ArgumentNullException("context");
+
+            context.BindingParameters.Add(this);
+            return context.BuildInnerChannelListener<TChannel>();
+        }
+
+        public override bool CanBuildChannelListener<TChannel>(BindingContext context)
+        {
+            if (context == null)
+                throw new ArgumentNullException("context");
+
+            context.BindingParameters.Add(this);
+            return context.CanBuildInnerChannelListener<TChannel>();
+        }
+
+        public override T GetProperty<T>(BindingContext context)
+        {
+            if (typeof(T) == typeof(XmlDictionaryReaderQuotas))
+            {
+                return (T)(object)this.readerQuotas;
+            }
+            else
+            {
+                return base.GetProperty<T>(context);
+            }
+        }
+
+        #region IWsdlExportExtension Members
+
+        void IWsdlExportExtension.ExportContract(WsdlExporter exporter, WsdlContractConversionContext context)
+        {
+        }
+
+        void IWsdlExportExtension.ExportEndpoint(WsdlExporter exporter, WsdlEndpointConversionContext context)
+        {
+            // The MessageEncodingBindingElement is responsible for ensuring that the WSDL has the correct 
+            // SOAP version. We can delegate to the WCF implementation of TextMessageEncodingBindingElement for this.
+            TextMessageEncodingBindingElement mebe = new TextMessageEncodingBindingElement();
+            mebe.MessageVersion = this.msgVersion;
+            ((IWsdlExportExtension)mebe).ExportEndpoint(exporter, context);
+        }
+
+        #endregion
+    }
+    #endregion
+
     public class AuthHeaderBehavior : IEndpointBehavior, IClientMessageInspector
     {
         public TokenProvider TokenProvider { get; set; }
@@ -344,7 +665,7 @@ namespace ReformaAPITesting
         public static string testInn = "7329012644";
         public static string registrationInn = "3304005479"; //INN (ITN) - specially created for new management company registration //ТСЖ "Текстильщик" с Владимира "3304005479"
         public static int houseTestId = 7497097;
-        public static int houseTestId2 = 8928081; 
+        public static int houseTestId2 = 8928081;
 
         /*static void Main(string[] args)
         {
@@ -372,6 +693,17 @@ namespace ReformaAPITesting
             Console.WriteLine("===========================================================");
         }
 
+        public static void PrintFilesInfo(int id, ReformaAPI.FileInfo[] files)
+        {
+            Console.WriteLine("==================File info log========================");
+            Console.WriteLine("The list is actual for house with id {0}", id);
+            foreach (var item in files)
+            {
+                Console.WriteLine("{0} - {1}.{2}", item.file_id, item.name, item.extension);
+            }
+            Console.WriteLine("=======================================================");
+        }
+
         static void Main(string[] args)
         {
             //Client creation
@@ -384,6 +716,17 @@ namespace ReformaAPITesting
             AuthHeaderBehavior behaviour = new AuthHeaderBehavior(token);
             //Activate this behaviour for our client connection
             client.Endpoint.Behaviors.Add(new AuthHeaderBehavior(token));
+            
+            // one way exception solution attempt
+            /*ICollection<BindingElement> bindingElements = new List<BindingElement>();
+            HttpTransportBindingElement httpBindingElement = new HttpTransportBindingElement();
+            CustomTextMessageBindingElement textBindingElement = new CustomTextMessageBindingElement();
+            bindingElements.Add(textBindingElement);
+            bindingElements.Add(httpBindingElement);
+            CustomBinding binding = new CustomBinding(bindingElements);
+            client.Endpoint.Binding = binding;*/
+            //
+            
             //1. *************** Login() *************** (+)
             response.LoginResult = client.Login(LOGIN, PASSWORD);
             (client.Endpoint.Behaviors.First(i => i.GetType() == typeof(AuthHeaderBehavior)) as AuthHeaderBehavior).TokenProvider.LogKey = response.LoginResult;
@@ -397,15 +740,15 @@ namespace ReformaAPITesting
 
             //4. *************** GetReportingPeriodList() - returns a list of system report periods
             ReportingPeriod[] periods = client.GetReportingPeriodList();
-
+            //GetCompanyProfileSFResponse d = client.GetCompanyProfileSF("fee76045-fe22-43a4-ad58-ad99e903bd58", 1, periods.Last().id);
             //5. *************** SetCompanyProfile() - changes company data according to current/archived organization document with corresponded INN(ITN)individual tafor set report period (-) so much stuff to load
             try
             {
-                client.SetCompanyProfile(testInn, client.GetReportingPeriodList().Last().id, new CompanyProfileData()
+                client.SetCompanyProfile(testInn, periods[4].id, new CompanyProfileData()
                 {
                     name_full = "Новое время",
                     name_short = "Новое время",
-                    okopf = 28016,
+                    okopf = Okopf.Item28016,
                     surname = "Мышляев",
                     firstname = "Игорь",
                     middlename = "Александрович",
@@ -433,7 +776,7 @@ namespace ReformaAPITesting
                     },
                     work_time = "9:00 - 21:00",
                     phone = "2233322",
-                    email = "organization_email",
+                    email = "organization@mail.ru",
                     site = "nowebsite.ru",
                     proportion_sf = 20.32f,
                     proportion_mo = 20.65f,
@@ -496,7 +839,6 @@ namespace ReformaAPITesting
                     net_assets = 10000000f,
                     annual_financial_statements = "Precisely estimated",
                     revenues_expenditures_estimates = "Estimations"
-                    //I'm fucked by amounts
                 });
             }
             catch (Exception e)
@@ -509,7 +851,7 @@ namespace ReformaAPITesting
             {
                 CompanyProfileData data = client.GetCompanyProfile(testInn, client.GetReportingPeriodList().Last().id);
             }
-            catch(Exception e) { }
+            catch (Exception e) { }
 
             //6. ************** SetNewCompany() - set a bid for a new company registration (-)
             try
@@ -521,7 +863,7 @@ namespace ReformaAPITesting
                     middlename = "Иванович",
                     name_full = "Текстильщик ТСЖ",
                     name_short = "Текстильщик",
-                    okopf = 28016,
+                    okopf = Okopf.Item28016,
                     position = "заместитель",
                     ogrn = "1033300201483",
                     date_assignment_ogrn = DateTime.Now.AddYears(-4),
@@ -544,7 +886,7 @@ namespace ReformaAPITesting
                         building = String.Empty,
                         room_number = String.Empty,
                     },
-                    post_address = new FiasAddress() 
+                    post_address = new FiasAddress()
                     {
                         city_id = "aa4aa0d7-f97f-4974-9291-c0a530a1ccb6", //Гусь-хрустальный
                         street_id = "81bfaf83-c26a-47cf-ae02-85eb193c4b6e", //Калинина
@@ -566,7 +908,7 @@ namespace ReformaAPITesting
             }
 
             //6.1 *************** SetCompanyProfile()
-            
+
 
             //Односторонняя операция вернула ненулевое сообщение с Action=
             //7. ************** GetHouseList() - returns houses list which are under management of organization with corresponded INN
@@ -588,7 +930,7 @@ namespace ReformaAPITesting
             //8. ************** SetUnlinkFromOrganization / SetHouseLinkToOrganization - resets and sets house under organization management 
             try
             {
-                client.SetUnlinkFromOrganization(houseId, DateTime.Now, 1, "Just a test reason");
+                //client.SetUnlinkFromOrganization(houseId, DateTime.Now, 1, "Just a test reason");
             }
             catch (Exception e)
             {
@@ -608,17 +950,50 @@ namespace ReformaAPITesting
             housesData = client.GetHouseList(testInn);
             PrintHousesList(testInn, housesData);
 
-            //9. ************** SetFileToHouseProfile
-            FileStream fs = new FileStream("test.txt", FileMode.Open, FileAccess.Read);
+            //9. ************** SetFileToHouseProfile() and GetFilesInfoFromHouseProfile()
+            FileStream fs = new FileStream("crutch.jpg", FileMode.Open, FileAccess.Read);
             byte[] fileBytes = new byte[fs.Length];
             fs.Read(fileBytes, 0, Convert.ToInt32(fs.Length));
             string encodedData = Convert.ToBase64String(fileBytes, Base64FormattingOptions.InsertLineBreaks);
+
             GetHouseProfileResponse resp = client.GetHouseProfile(houseTestId2);
-            client.SetFileToHouseProfile(houseTestId2, 21, new FileObject() { name = "testFile", data = encodedData });
+            //client.SetFileToHouseProfile(houseTestId2, 12, new FileObject() { name = "crutch.jpg", data = encodedData });
+            ReformaAPI.FileInfo[] files = client.GetFilesInfoFromHouseProfile(houseTestId2, 12);
+            PrintFilesInfo(houseTestId2, files);
+
+            //10. ************* GetFileById() ****************
+            FileObject file = client.GetFileByID(files.Last().file_id);
+            //let's make attempt to save file to computer folder
+            var bytes = Convert.FromBase64String(file.data);
+            using (var imgFile = new FileStream("newfile" + file.name.Substring(file.name.IndexOf('.'), file.name.Length - file.name.IndexOf('.')), FileMode.Create))
+            {
+                imgFile.Write(bytes, 0, bytes.Length);
+                imgFile.Flush();
+            }
+
+            //11. *************SetFileDelete() ***************
+            Console.WriteLine("Before delete");
+            files = client.GetFilesInfoFromHouseProfile(houseTestId2, 12);
+            PrintFilesInfo(houseTestId2, files);
+
+            if (files.Last() != null)
+            {
+                try
+                {
+                    client.SetFileDeleted(files.Last().file_id);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Exception type = {0}, Exception message = {1}", e.GetType(), e.Message);
+                }
+            }
+            //checking... did the file really delete?
+            files = client.GetFilesInfoFromHouseProfile(houseTestId2, 12);
+            Console.WriteLine("After delete");
+            PrintFilesInfo(houseTestId2, files);
 
             // ************** SetFileToCompanyProfile() - sets a new file in organization document for a corresponded report period
             //client.SetFileToCompanyProfile(periods.Last().id, "7329012644", 1, new FileObject() { data = "Some test data to upload", name = "testFile" }); 
-
 
             //   *************** Logout() ***************
             try
@@ -630,6 +1005,7 @@ namespace ReformaAPITesting
                 Console.WriteLine("Exception type = {0}, Exception message = {1}", e.GetType(), e.Message);
             }
 
+            Console.WriteLine("Press any key to interrupt the program execution...");
             Console.ReadKey();
         }
     }

@@ -1,0 +1,13 @@
+{
+<s:Envelope xmlns:a="http://www.w3.org/2005/08/addressing" xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+  <s:Header>
+    <a:To s:mustUnderstand="1">http://api-beta.reformagkh.ru/api_document_literal</a:To>
+  </s:Header>
+  <s:Body xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <Login xmlns="http://api-beta.reformagkh.ru/api_document_literal">
+      <login xmlns="">a.zhelepov</login>
+      <password xmlns="">!ALEX!()$!(($!</password>
+    </Login>
+  </s:Body>
+</s:Envelope>
+}

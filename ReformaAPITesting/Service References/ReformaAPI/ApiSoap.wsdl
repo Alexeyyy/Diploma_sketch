@@ -66,7 +66,7 @@
       <xsd:simpleType name="SetRequestForSubmitInnStatusEnum">
         <xsd:restriction base="xsd:int">
           <xsd:enumeration label="Success" description="Ошибок нет. Заявка подана." value="0" />
-          <xsd:enumeration label="Missing INN" value="1" />
+          <xsd:enumeration label="Missing INN" description="Управляющая организация с  указанным ИНН не найдена" value="1" />
           <xsd:enumeration label="INN is not valid" description="Указан некорректный ИНН" value="2" />
           <xsd:enumeration label="Request have been already submitted" description="Запрос на подписку был уже подан ранее" value="3" />
         </xsd:restriction>
@@ -686,61 +686,68 @@
         </xsd:complexType>
       </xsd:element>
       <xsd:simpleType name="Okopf">
-        <xsd:restriction base="xsd:int">
-          <xsd:enumeration label="1_10_00" description="Хозяйственные товарищества" value="1" />
-          <xsd:enumeration label="1_10_51" description="Полные товарищества" value="2" />
-          <xsd:enumeration label="1_10_64" description="Товарищества на вере (коммандитные товарищества)" value="3" />
-          <xsd:enumeration label="1_20_00" description="Хозяйственные общества" value="4" />
-          <xsd:enumeration label="1_21_00" description="Общества с ограниченной или дополнительной ответственностью" value="5" />
-          <xsd:enumeration label="1_21_65" description="Общества с ограниченной ответственностью" value="6" />
-          <xsd:enumeration label="1_21_66" description="Общества с дополнительной ответственностью" value="7" />
-          <xsd:enumeration label="1_22_00" description="Акционерные общества" value="8" />
-          <xsd:enumeration label="1_22_47" description="Открытые акционерные общества" value="9" />
-          <xsd:enumeration label="1_22_67" description="Закрытые акционерные общества" value="10" />
-          <xsd:enumeration label="1_30_00" description="Хозяйственные партнерства" value="11" />
-          <xsd:enumeration label="1_40_00" description="Производственные кооперативы (артели)" value="12" />
-          <xsd:enumeration label="1_42_00" description="Производственные кооперативы (кроме сельскохозяйственных производственных кооперативов)" value="13" />
-          <xsd:enumeration label="1_50_00" description="Унитарные предприятия" value="14" />
-          <xsd:enumeration label="1_51_00" description="Унитарные предприятия, основанные на праве оперативного управления (казенные предприятия)" value="15" />
-          <xsd:enumeration label="1_51_41" description="Федеральные казенные предприятия" value="16" />
-          <xsd:enumeration label="1_51_43" description="Муниципальные казенные предприятия" value="17" />
-          <xsd:enumeration label="1_52_00" description="Унитарные предприятия, основанные на праве хозяйственного ведения" value="18" />
-          <xsd:enumeration label="1_52_41" description="Федеральные государственные унитарные предприятия" value="19" />
-          <xsd:enumeration label="1_52_42" description="Государственные унитарные предприятия субъектов Российской Федерации" value="20" />
-          <xsd:enumeration label="1_52_43" description="Муниципальные унитарные предприятия" value="21" />
-          <xsd:enumeration label="1_90_00" description="Прочие юридические лица, являющиеся коммерческими организациями" value="22" />
-          <xsd:enumeration label="2_01_00" description="Потребительские кооперативы" value="23" />
-          <xsd:enumeration label="2_01_02" description="Жилищные и жилищно-строительные кооперативы" value="24" />
-          <xsd:enumeration label="2_01_03" description="Жилищные накопительные кооперативы" value="25" />
-          <xsd:enumeration label="2_01_04" description="Кредитные потребительские кооперативы" value="26" />
-          <xsd:enumeration label="2_01_07" description="Потребительские общества" value="27" />
-          <xsd:enumeration label="2_02_00" description="Общественные организации (объединения)" value="28" />
-          <xsd:enumeration label="2_04_00" description="Фонды" value="29" />
-          <xsd:enumeration label="2_05_00" description="Некоммерческие партнерства" value="30" />
-          <xsd:enumeration label="2_06_00" description="Ассоциации (союзы)" value="31" />
-          <xsd:enumeration label="2_06_01" description="Ассоциации (союзы) экономического взаимодействия субъектов Российской Федерации" value="32" />
-          <xsd:enumeration label="2_06_03" description="Советы муниципальных образований субъектов Российской Федерации" value="33" />
-          <xsd:enumeration label="2_06_05" description="Союзы (ассоциации) кооперативов" value="34" />
-          <xsd:enumeration label="2_06_08" description="Союзы потребительских обществ" value="35" />
-          <xsd:enumeration label="2_09_00" description="Учреждения" value="36" />
-          <xsd:enumeration label="2_09_01" description="Автономные учреждения" value="37" />
-          <xsd:enumeration label="2_09_03" description="Бюджетные учреждения" value="38" />
-          <xsd:enumeration label="2_09_04" description="Казенные учреждения" value="39" />
-          <xsd:enumeration label="2_09_05" description="Общественные учреждения" value="40" />
-          <xsd:enumeration label="2_09_06" description="Частные учреждения" value="41" />
-          <xsd:enumeration label="2_80_00" description="Юридические лица, являющиеся некоммерческими организациями, не включенные в другие группировки" value="42" />
-          <xsd:enumeration label="2_80_01" description="Автономные некоммерческие организации" value="43" />
-          <xsd:enumeration label="2_80_04" description="Государственные компании" value="44" />
-          <xsd:enumeration label="2_80_05" description="Государственные корпорации" value="45" />
-          <xsd:enumeration label="2_80_16" description="Товарищества собственников жилья" value="46" />
-          <xsd:enumeration label="2_80_17" description="Территориальные общественные самоуправления" value="47" />
-          <xsd:enumeration label="2_90_00" description="Иные некоммерческие организации, не включенные в другие группировки" value="48" />
-          <xsd:enumeration label="3_00_01" description="Представительства юридических лиц" value="49" />
-          <xsd:enumeration label="3_00_02" description="Филиалы юридических лиц" value="50" />
-          <xsd:enumeration label="3_00_03" description="Обособленные подразделения юридических лиц" value="51" />
-          <xsd:enumeration label="3_00_04" description="Структурные подразделения обособленных подразделений юридических лиц" value="52" />
-          <xsd:enumeration label="3_00_06" description="Простые товарищества" value="53" />
-          <xsd:enumeration label="5_01_02" description="Индивидуальные предприниматели" value="54" />
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="1 10 00" />
+          <xsd:enumeration value="1 10 51" />
+          <xsd:enumeration value="1 10 64" />
+          <xsd:enumeration value="1 20 00" />
+          <xsd:enumeration value="1 21 00" />
+          <xsd:enumeration value="1 21 65" />
+          <xsd:enumeration value="1 21 66" />
+          <xsd:enumeration value="1 22 00" />
+          <xsd:enumeration value="1 22 47" />
+          <xsd:enumeration value="1 22 67" />
+          <xsd:enumeration value="1 30 00" />
+          <xsd:enumeration value="1 40 00" />
+          <xsd:enumeration value="1 41 00" />
+          <xsd:enumeration value="1 42 00" />
+          <xsd:enumeration value="1 50 00" />
+          <xsd:enumeration value="1 51 00" />
+          <xsd:enumeration value="1 51 41" />
+          <xsd:enumeration value="1 51 43" />
+          <xsd:enumeration value="1 52 00" />
+          <xsd:enumeration value="1 52 41" />
+          <xsd:enumeration value="1 52 42" />
+          <xsd:enumeration value="1 52 43" />
+          <xsd:enumeration value="1 53 00" />
+          <xsd:enumeration value="1 90 00" />
+          <xsd:enumeration value="2 01 00" />
+          <xsd:enumeration value="2 01 02" />
+          <xsd:enumeration value="2 01 03" />
+          <xsd:enumeration value="2 01 04" />
+          <xsd:enumeration value="2 01 07" />
+          <xsd:enumeration value="2 02 00" />
+          <xsd:enumeration value="2 02 10" />
+          <xsd:enumeration value="2 02 11" />
+          <xsd:enumeration value="2 04 00" />
+          <xsd:enumeration value="2 05 00" />
+          <xsd:enumeration value="2 06 00" />
+          <xsd:enumeration value="2 06 01" />
+          <xsd:enumeration value="2 06 03" />
+          <xsd:enumeration value="2 06 05" />
+          <xsd:enumeration value="2 06 08" />
+          <xsd:enumeration value="2 09 00" />
+          <xsd:enumeration value="2 09 01" />
+          <xsd:enumeration value="2 09 03" />
+          <xsd:enumeration value="2 09 04" />
+          <xsd:enumeration value="2 09 05" />
+          <xsd:enumeration value="2 09 06" />
+          <xsd:enumeration value="2 10 01" />
+          <xsd:enumeration value="2 80 00" />
+          <xsd:enumeration value="2 80 01" />
+          <xsd:enumeration value="2 80 04" />
+          <xsd:enumeration value="2 80 05" />
+          <xsd:enumeration value="2 80 13" />
+          <xsd:enumeration value="2 80 15" />
+          <xsd:enumeration value="2 80 16" />
+          <xsd:enumeration value="2 80 17" />
+          <xsd:enumeration value="2 90 00" />
+          <xsd:enumeration value="3 00 01" />
+          <xsd:enumeration value="3 00 02" />
+          <xsd:enumeration value="3 00 03" />
+          <xsd:enumeration value="3 00 04" />
+          <xsd:enumeration value="3 00 06" />
+          <xsd:enumeration value="5 01 02" />
         </xsd:restriction>
       </xsd:simpleType>
       <xsd:complexType name="NewCompanyProfileData">
@@ -752,9 +759,9 @@
           <xsd:element name="surname" type="xsd:string" />
           <xsd:element name="middlename" type="xsd:string" />
           <xsd:element name="position" type="xsd:string" />
-          <xsd:element name="ogrn" type="xsd:string" />
-          <xsd:element name="date_assignment_ogrn" type="xsd:date" />
-          <xsd:element name="name_authority_assigning_ogrn" type="xsd:string" />
+          <xsd:element name="ogrn" nillable="true" type="xsd:string" />
+          <xsd:element name="date_assignment_ogrn" nillable="true" type="xsd:date" />
+          <xsd:element name="name_authority_assigning_ogrn" nillable="true" type="xsd:string" />
           <xsd:element name="legal_address" type="tns:FiasAddress" />
           <xsd:element name="actual_address" type="tns:FiasAddress" />
           <xsd:element name="post_address" type="tns:FiasAddress" />
@@ -1058,9 +1065,9 @@
           <xsd:element name="surname" type="xsd:string" />
           <xsd:element name="middlename" type="xsd:string" />
           <xsd:element name="position" type="xsd:string" />
-          <xsd:element name="ogrn" type="xsd:string" />
-          <xsd:element name="date_assignment_ogrn" type="xsd:date" />
-          <xsd:element name="name_authority_assigning_ogrn" type="xsd:string" />
+          <xsd:element name="ogrn" nillable="true" type="xsd:string" />
+          <xsd:element name="date_assignment_ogrn" nillable="true" type="xsd:date" />
+          <xsd:element name="name_authority_assigning_ogrn" nillable="true" type="xsd:string" />
           <xsd:element name="legal_address" type="tns:FiasAddress" />
           <xsd:element name="actual_address" type="tns:FiasAddress" />
           <xsd:element name="post_address" type="tns:FiasAddress" />
