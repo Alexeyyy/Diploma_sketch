@@ -717,7 +717,7 @@ namespace ReformaAPITesting
             //Activate this behaviour for our client connection
             client.Endpoint.Behaviors.Add(new AuthHeaderBehavior(token));
             
-            // one way exception solution attempt
+            // oneway exception solution attempt
             /*ICollection<BindingElement> bindingElements = new List<BindingElement>();
             HttpTransportBindingElement httpBindingElement = new HttpTransportBindingElement();
             CustomTextMessageBindingElement textBindingElement = new CustomTextMessageBindingElement();
@@ -847,11 +847,27 @@ namespace ReformaAPITesting
             }
 
             //5.1 *********************** GetCompanyProfileData()
+            CompanyProfileData companyProfileData = null;
             try
             {
-                CompanyProfileData data = client.GetCompanyProfile(testInn, client.GetReportingPeriodList().Last().id);
+                companyProfileData = client.GetCompanyProfile(testInn, periods[4].id);
             }
-            catch (Exception e) { }
+            catch (Exception e) 
+            {
+                Console.WriteLine("Method name is {0}, Exception type = {1}, Exception message = {2}", "SetNewCompany", e.GetType(), e.Message);
+            }
+
+            //5.2 *********************** SetFileInCompanyProfile() - attaches new file to company report document
+            ReformaAPI.FileInfo[] files = client.GetFilesInfoFromCompanyProfile(testInn, periods[4].id, 2);
+
+            FileStream fs = new FileStream("crutch.jpg", FileMode.Open, FileAccess.Read);
+            byte[] fileBytes = new byte[fs.Length];
+            fs.Read(fileBytes, 0, Convert.ToInt32(fs.Length));
+            string encodedData = Convert.ToBase64String(fileBytes, Base64FormattingOptions.InsertLineBreaks);
+            client.SetFileToCompanyProfile(periods[4].id, testInn, 2, new FileObject() { data = encodedData, name = "crutch2.jpg"});
+
+            files = client.GetFilesInfoFromCompanyProfile(testInn, periods[4].id, 2);
+
 
             //6. ************** SetNewCompany() - set a bid for a new company registration (-)
             try
@@ -907,9 +923,6 @@ namespace ReformaAPITesting
                 Console.WriteLine("Method name is {0}, Exception type = {1}, Exception message = {2}", "SetNewCompany", e.GetType(), e.Message);
             }
 
-            //6.1 *************** SetCompanyProfile()
-
-
             //Односторонняя операция вернула ненулевое сообщение с Action=
             //7. ************** GetHouseList() - returns houses list which are under management of organization with corresponded INN
             HouseData[] housesData = client.GetHouseList(testInn);
@@ -926,6 +939,11 @@ namespace ReformaAPITesting
                 building = housesData.First().full_address.building,
                 room_number = ""
             };
+
+            //7.1 *************** SetHouseProfile()
+            client.SetHouseProfile(houseId, new HouseProfileData() {
+                //later
+            });
 
             //8. ************** SetUnlinkFromOrganization / SetHouseLinkToOrganization - resets and sets house under organization management 
             try
@@ -951,14 +969,14 @@ namespace ReformaAPITesting
             PrintHousesList(testInn, housesData);
 
             //9. ************** SetFileToHouseProfile() and GetFilesInfoFromHouseProfile()
-            FileStream fs = new FileStream("crutch.jpg", FileMode.Open, FileAccess.Read);
-            byte[] fileBytes = new byte[fs.Length];
+            fs = new FileStream("crutch.jpg", FileMode.Open, FileAccess.Read);
+            fileBytes = new byte[fs.Length];
             fs.Read(fileBytes, 0, Convert.ToInt32(fs.Length));
-            string encodedData = Convert.ToBase64String(fileBytes, Base64FormattingOptions.InsertLineBreaks);
+            encodedData = Convert.ToBase64String(fileBytes, Base64FormattingOptions.InsertLineBreaks);
 
             GetHouseProfileResponse resp = client.GetHouseProfile(houseTestId2);
             //client.SetFileToHouseProfile(houseTestId2, 12, new FileObject() { name = "crutch.jpg", data = encodedData });
-            ReformaAPI.FileInfo[] files = client.GetFilesInfoFromHouseProfile(houseTestId2, 12);
+            files = client.GetFilesInfoFromHouseProfile(houseTestId2, 12);
             PrintFilesInfo(houseTestId2, files);
 
             //10. ************* GetFileById() ****************
